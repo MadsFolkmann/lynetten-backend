@@ -1,4 +1,4 @@
-import mysql from "mysql2/promise"; // using mysql2 - installed npm library
+import mysql from "mysql2/promise"; 
 import "dotenv/config";
 import fs from "fs/promises";
 import { log } from "console";
