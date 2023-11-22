@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import fs from "fs/promises";
 import Debug from "debug";
-
+import dbConnection from "./database.js";
 
 const app = express();
 const port = process.env.PORT || 4444;
