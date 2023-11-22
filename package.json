@@ -7,14 +7,13 @@
   "scripts": {
     "start": "node server.js"
   },
-  "author": "",
+  "author": "AEM",
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
     "debug": "^4.3.4",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "fs": "^0.0.1-security",
     "mysql2": "^3.6.5"
   }
 }
