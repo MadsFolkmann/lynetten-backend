@@ -1,4 +1,4 @@
-import mysql from "mysql2/promise"; 
+import mysql from "mysql2/promise";
 import "dotenv/config";
 import fs from "fs/promises";
 import { log } from "console";
@@ -16,7 +16,7 @@ const connection = {
 };
 
 if (process.env.MYSQL_CERT) {
-  connection.ssl = { ca: await fs.readFile("DigiCertGlobalRootCA.crt(1).pem") };
+  connection.ssl = { ca: await fs.readFile("DigitalCertificateGlobalRootCA.crt.pem") };
 }
 
 const dbConnection = await mysql.createConnection(connection);
