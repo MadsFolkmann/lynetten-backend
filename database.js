@@ -16,7 +16,7 @@ const connection = {
 };
 
 if (process.env.MYSQL_CERT) {
-  connection.ssl = { ca: await fs.readFile("DigiCertGlobalRootCA.crt.pem") };
+  connection.ssl = { ca: await fs.readFile("DigitalCertificateGlobalRootCA.crt.pem") };
 }
 
 const dbConnection = await mysql.createConnection(connection);
