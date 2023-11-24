@@ -74,4 +74,30 @@ productRouter.get("/:id/category", async (request, response) => {
   }
 });
 
+// Put Products
+productRouter.put("/:id", async (request, response) => {
+  try {
+    const productId = request.params.id;
+
+    // Udtræk opdaterede produktoplysninger fra anmodningens krop
+    const { productNumber, productName, imageURLs, listPrice, offerPrice, stockQuantity } = request.body;
+
+    // Opdater produktet i Product-tabellen
+    const updateProductQuery = /*sql*/ `
+      UPDATE Product
+      SET productNumber = ?, productName = ?, imageURLs = ?, listPrice = ?, offerPrice = ?, stockQuantity = ?
+      WHERE productId = ?;
+    `;
+
+    const updateProductValues = [productNumber, productName, imageURLs, listPrice, offerPrice, stockQuantity, productId];
+
+    await dbConnection.execute(updateProductQuery, updateProductValues);
+
+    response.json({ message: "Product updated successfully" });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ message: "Internal server error" });
+  }
+});
+
 export default productRouter;
