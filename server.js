@@ -3,6 +3,9 @@ import cors from "cors";
 import fs from "fs/promises";
 import Debug from "debug";
 import dbConnection from "./database.js";
+import productRouter from "./routes/products.js";
+import categoryRouter from "./routes/category.js";
+import userRouter from "./routes/user.js";
 
 const app = express();
 const port = process.env.PORT || 4444;
@@ -20,3 +23,8 @@ app.get("/", (req, res) => {
 app.listen(port, () => {
   console.log(`Server started on port http://localhost:${port}`);
 });
+
+// Routers
+app.use("/product", productRouter);
+app.use("/category", categoryRouter);
+app.use("/user", userRouter);
