@@ -15,4 +15,25 @@ userRouter.get("/", async (request, response) => {
   }
 });
 
+// GET SPECIFIC USER
+userRouter.get("/:id", async (request, response) => {
+  const id = request.params.id;
+  const query = /*sql*/ `
+    SELECT * 
+    FROM user WHERE userId=?;`;
+  const values = [id];
+
+  try {
+    const [results] = await dbConnection.execute(query, values);
+    if (results.length === 0) {
+      response.status(404).json({ message: "User not found" });
+    } else {
+      response.json(results);
+    }
+  } catch (error) {
+    console.log(error);
+    response.json({ message: error.message });
+  }
+});
+
 export default userRouter;

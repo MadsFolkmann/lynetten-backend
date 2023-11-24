@@ -3,12 +3,71 @@ import dbConnection from "../database.js";
 
 const productRouter = Router();
 
-// Get Products
+// GET PRODUCTS
 productRouter.get("/", async (request, response) => {
   try {
-    const query = "SELECT * FROM product ORDER BY productName;";
+    const query = /*sql*/ `
+      SELECT P.*, GROUP_CONCAT(DISTINCT CAT.categoryName) as categories, GROUP_CONCAT(DISTINCT CO.colorName) as colors
+      FROM Product AS P
+      LEFT JOIN ProductCategory AS PC ON P.productId = PC.productId
+      LEFT JOIN Category AS CAT ON PC.categoryId = CAT.categoryId
+      LEFT JOIN Color AS CO ON P.productId = CO.productId
+      GROUP BY P.productId
+      ORDER BY P.productName;`;
+
     const [rows, fields] = await dbConnection.execute(query);
     response.json(rows);
+  } catch (error) {
+    console.log(error);
+    response.json({ message: error.message });
+  }
+});
+
+// GET SPECIFIC PRODUCT BY ID
+productRouter.get("/:id", async (request, response) => {
+  try {
+    const productId = request.params.id;
+    const query = /*sql*/ `
+      SELECT P.*, GROUP_CONCAT(DISTINCT CAT.categoryName) as categories, GROUP_CONCAT(DISTINCT CO.colorName) as colors
+      FROM Product AS P
+      LEFT JOIN ProductCategory AS PC ON P.productId = PC.productId
+      LEFT JOIN Category AS CAT ON PC.categoryId = CAT.categoryId
+      LEFT JOIN Color AS CO ON P.productId = CO.productId
+      WHERE P.productId = ?
+      GROUP BY P.productId;`;
+
+    const [rows, fields] = await dbConnection.execute(query, [productId]);
+
+    if (rows.length === 0) {
+      response.status(404).json({ message: "Product not found" });
+    } else {
+      response.json(rows[0]);
+    }
+  } catch (error) {
+    console.log(error);
+    response.json({ message: error.message });
+  }
+});
+
+// Get Specific Product Category by ID
+productRouter.get("/:id/category", async (request, response) => {
+  try {
+    const productId = request.params.id;
+    const query = /*sql*/ `
+      SELECT GROUP_CONCAT(DISTINCT CAT.categoryName) as categories
+      FROM Product AS P
+      LEFT JOIN ProductCategory AS PC ON P.productId = PC.productId
+      LEFT JOIN Category AS CAT ON PC.categoryId = CAT.categoryId
+      WHERE P.productId = ?
+      GROUP BY P.productId;`;
+
+    const [rows, fields] = await dbConnection.execute(query, [productId]);
+
+    if (rows.length === 0) {
+      response.status(404).json({ message: "Product not found" });
+    } else {
+      response.json({ categories: rows[0].categories });
+    }
   } catch (error) {
     console.log(error);
     response.json({ message: error.message });
