@@ -100,4 +100,71 @@ productRouter.put("/:id", async (request, response) => {
   }
 });
 
+// productRouter.delete("/:id", async (request, response) => {
+//   try {
+//     const productId = request.params.id;
+
+//     const deleteProductQuery = /*sql*/ `
+//       DELETE FROM Product
+//       WHERE productId = ?;
+//     `;
+
+//     await dbConnection.execute(deleteProductQuery, [productId]);
+
+//     response.json({ message: "Product deleted successfully" });
+//   } catch (error) {
+//     console.error(error);
+//     response.status(500).json({ message: "Internal server error" });
+//   }
+// });
+
+//////////////// DET HER NEDENUNDER ER HVIS DU SKAL KUNNE OPDATERER ELLER SLETTE PROPERTIES GENNEM FLERE TABELLER: ////////////////
+
+// productRouter.put("/:id", async (request, response) => {
+//   try {
+//     const productId = request.params.id;
+
+//     // Extract updated product information from the request body
+//     const { productNumber, productName, imageURLs, listPrice, offerPrice, stockQuantity, categories, colors } = request.body;
+
+//     // Update the product in the Product table
+//     const updateProductQuery = /*sql*/ `
+//       UPDATE Product
+//       SET productNumber = ?, productName = ?, imageURLs = ?, listPrice = ?, offerPrice = ?, stockQuantity = ?
+//       WHERE productId = ?;
+//     `;
+
+//     const updateProductValues = [productNumber, productName, imageURLs, listPrice, offerPrice, stockQuantity, productId];
+
+//     await dbConnection.execute(updateProductQuery, updateProductValues);
+
+//     // Insert new categories for the product
+//     const insertCategoriesQuery = /*sql*/ `
+//       INSERT INTO ProductCategory (productId, categoryId) VALUES (?, ?);
+//     `;
+
+//     for (const category of categories) {
+//       // Ensure that the category is an integer before attempting to insert
+//       const categoryId = parseInt(category);
+//       if (!isNaN(categoryId)) {
+//         await dbConnection.execute(insertCategoriesQuery, [productId, categoryId]);
+//       }
+//     }
+
+//     // Insert new colors for the product
+//     const insertColorsQuery = /*sql*/ `
+//       INSERT INTO Color (productId, colorName) VALUES (?, ?);
+//     `;
+
+//     for (const color of colors) {
+//       await dbConnection.execute(insertColorsQuery, [productId, color]);
+//     }
+
+//     response.json({ message: "Product updated successfully" });
+//   } catch (error) {
+//     console.error(error);
+//     response.status(500).json({ message: "Internal server error" });
+//   }
+// });
+
 export default productRouter;
