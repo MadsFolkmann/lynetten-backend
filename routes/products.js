@@ -24,7 +24,6 @@ productRouter.get("/", async (request, response) => {
 });
 
 // GET SPECIFIC PRODUCT BY ID
-// GET SPECIFIC PRODUCT BY ID
 productRouter.get("/:id", async (request, response) => {
   try {
     const productId = request.params.id;
@@ -132,6 +131,47 @@ productRouter.put("/:id", async (request, response) => {
     }
 
     response.json({ message: "Product updated successfully" });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// Delete Products
+productRouter.delete("/:id", async (request, response) => {
+  try {
+    const productId = request.params.id;
+    const { categoryIdsToDelete } = request.body;
+
+    // Delete specific product-category associations
+    const deleteCategoriesQuery = /*sql*/ `
+      DELETE FROM ProductCategory
+      WHERE productId = ? AND categoryId IN (?);
+    `;
+    await dbConnection.execute(deleteCategoriesQuery, [productId, categoryIdsToDelete]);
+
+    // Delete product colors
+    const deleteColorsQuery = /*sql*/ `
+      DELETE FROM Color
+      WHERE productId = ?;
+    `;
+    await dbConnection.execute(deleteColorsQuery, [productId]);
+
+    // Delete the product if no categories are left for the product
+    const remainingCategoriesQuery = /*sql*/ `
+      SELECT COUNT(*) AS count FROM ProductCategory WHERE productId = ?;
+    `;
+    const [result] = await dbConnection.execute(remainingCategoriesQuery, [productId]);
+
+    if (result[0].count === 0) {
+      const deleteProductQuery = /*sql*/ `
+        DELETE FROM Product
+        WHERE productId = ?;
+      `;
+      await dbConnection.execute(deleteProductQuery, [productId]);
+    }
+
+    response.json({ message: "Product deleted successfully" });
   } catch (error) {
     console.error(error);
     response.status(500).json({ message: "Internal server error" });
