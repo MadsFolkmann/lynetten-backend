@@ -63,4 +63,63 @@ categoryRouter.get("/:id", async (request, response) => {
   }
 });
 
+// PUT (Update) a Category
+categoryRouter.put("/:id", async (request, response) => {
+  const categoryId = request.params.id;
+  const { categoryName } = request.body;
+
+  // Check if the category exists
+  const checkCategoryQuery = /*sql*/ `
+    SELECT * FROM Category WHERE categoryId = ?;
+  `;
+  const [checkCategoryResults] = await dbConnection.execute(checkCategoryQuery, [categoryId]);
+
+  if (checkCategoryResults.length === 0) {
+    return response.status(404).json({ message: "Category not found" });
+  }
+
+  // Update the category
+  const updateCategoryQuery = /*sql*/ `
+    UPDATE Category SET categoryName = ? WHERE categoryId = ?;
+  `;
+  const updateCategoryValues = [categoryName, categoryId];
+
+  try {
+    await dbConnection.execute(updateCategoryQuery, updateCategoryValues);
+    response.json({ message: "Category updated successfully" });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// DELETE a Category
+categoryRouter.delete("/:id", async (request, response) => {
+  const categoryId = request.params.id;
+
+  // Check if the category exists
+  const checkCategoryQuery = /*sql*/ `
+    SELECT * FROM Category WHERE categoryId = ?;
+  `;
+  const [checkCategoryResults] = await dbConnection.execute(checkCategoryQuery, [categoryId]);
+
+  if (checkCategoryResults.length === 0) {
+    return response.status(404).json({ message: "Category not found" });
+  }
+
+  // Delete the category
+  const deleteCategoryQuery = /*sql*/ `
+    DELETE FROM Category WHERE categoryId = ?;
+  `;
+  const deleteCategoryValues = [categoryId];
+
+  try {
+    await dbConnection.execute(deleteCategoryQuery, deleteCategoryValues);
+    response.json({ message: "Category deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ message: "Internal server error" });
+  }
+});
+
 export default categoryRouter;
