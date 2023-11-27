@@ -97,7 +97,6 @@ productRouter.post("/", async (request, response) => {
     // Insert categories for the product
     if (categories && categories.length > 0) {
       for (const categoryName of categories) {
-        console.log(categories);
         // Get the categoryId based on categoryName
         const getCategoryQuery = /*sql*/ `
       SELECT categoryId FROM Category WHERE categoryName = ?;
@@ -164,13 +163,13 @@ productRouter.put("/:id", async (request, response) => {
         DELETE FROM ProductCategory WHERE productId = ?;
       `;
       await dbConnection.execute(deleteCategoriesQuery, [productId]);
-
       // Insert new categories for the product
       const insertCategoriesQuery = /*sql*/ `
-        INSERT INTO ProductCategory (productId, categoryId) VALUES (?, ?);
+      INSERT INTO ProductCategory (productId, categoryId) VALUES (?, ?);
       `;
       for (const category of categories) {
         await dbConnection.execute(insertCategoriesQuery, [productId, category]);
+        console.log(category);
       }
     }
 
@@ -200,43 +199,36 @@ productRouter.put("/:id", async (request, response) => {
 
 // Delete Products
 productRouter.delete("/:id", async (request, response) => {
-  try {
-    const productId = request.params.id;
-    const { categoryIdsToDelete } = request.body;
+    try {
+        const productId = request.params.id;
 
-    // Delete specific product-category associations
-    const deleteCategoriesQuery = /*sql*/ `
+        // Delete specific product-category associations
+        const deleteCategoriesQuery = /*sql*/ `
       DELETE FROM ProductCategory
-      WHERE productId = ? AND categoryId IN (?);
+      WHERE productId = ?;
     `;
-    await dbConnection.execute(deleteCategoriesQuery, [productId, categoryIdsToDelete]);
+        await dbConnection.execute(deleteCategoriesQuery, [productId]);
 
-    // Delete product colors
-    const deleteColorsQuery = /*sql*/ `
+        // Delete product colors
+        const deleteColorsQuery = /*sql*/ `
       DELETE FROM Color
       WHERE productId = ?;
     `;
-    await dbConnection.execute(deleteColorsQuery, [productId]);
+        await dbConnection.execute(deleteColorsQuery, [productId]);
 
-    // Delete the product if no categories are left for the product
-    const remainingCategoriesQuery = /*sql*/ `
-      SELECT COUNT(*) AS count FROM ProductCategory WHERE productId = ?;
+        // Delete the product
+        const deleteProductQuery = /*sql*/ `
+      DELETE FROM Product
+      WHERE productId = ?;
     `;
-    const [result] = await dbConnection.execute(remainingCategoriesQuery, [productId]);
+        await dbConnection.execute(deleteProductQuery, [productId]);
 
-    if (result[0].count === 0) {
-      const deleteProductQuery = /*sql*/ `
-        DELETE FROM Product
-        WHERE productId = ?;
-      `;
-      await dbConnection.execute(deleteProductQuery, [productId]);
+        response.json({ message: "Product deleted successfully" });
+    } catch (error) {
+        console.error(error);
+        response.status(500).json({ message: "Internal server error" });
     }
-
-    response.json({ message: "Product deleted successfully" });
-  } catch (error) {
-    console.error(error);
-    response.status(500).json({ message: "Internal server error" });
-  }
 });
+
 
 export default productRouter;
