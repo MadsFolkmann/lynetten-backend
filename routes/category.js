@@ -8,7 +8,7 @@ categoryRouter.get("/", async (request, response) => {
   try {
     const categoryQuery = /*sql*/ `
       SELECT C.*, GROUP_CONCAT(DISTINCT P.productName) AS products, GROUP_CONCAT(DISTINCT CO.colorName) AS colors
-      FROM Category AS C
+      FROM Categories AS C
       LEFT JOIN ProductCategory AS PC ON C.categoryId = PC.categoryId
       LEFT JOIN Product AS P ON PC.productId = P.productId
       LEFT JOIN Color AS CO ON P.productId = CO.productId
@@ -29,7 +29,7 @@ categoryRouter.get("/:id", async (request, response) => {
   const categoryId = request.params.id;
   const categoryQuery = /*sql*/ `
     SELECT * 
-    FROM category WHERE categoryId=?;`;
+    FROM categories WHERE categoryId=?;`;
   const categoryValues = [categoryId];
 
   try {
@@ -40,7 +40,7 @@ categoryRouter.get("/:id", async (request, response) => {
     } else {
       const productQuery = /*sql*/ `
         SELECT P.*, GROUP_CONCAT(DISTINCT CO.colorName) as colors
-        FROM Product AS P
+        FROM Products AS P
         LEFT JOIN ProductCategory AS PC ON P.productId = PC.productId
         LEFT JOIN Color AS CO ON P.productId = CO.productId
         WHERE PC.categoryId = ?
@@ -68,7 +68,7 @@ categoryRouter.post("/", async (request, response) => {
   const { categoryName } = request.body;
 
   const createCategoryQuery = /*sql*/ `
-    INSERT INTO Category (categoryName)
+    INSERT INTO Categories (categoryName)
     VALUES (?);
   `;
   const createCategoryValues = [categoryName];
@@ -89,7 +89,7 @@ categoryRouter.put("/:id", async (request, response) => {
 
   // Check if the category exists
   const checkCategoryQuery = /*sql*/ `
-    SELECT * FROM Category WHERE categoryId = ?;
+    SELECT * FROM Categories WHERE categoryId = ?;
   `;
   const [checkCategoryResults] = await dbConnection.execute(checkCategoryQuery, [categoryId]);
 
@@ -99,7 +99,7 @@ categoryRouter.put("/:id", async (request, response) => {
 
   // Update the category
   const updateCategoryQuery = /*sql*/ `
-    UPDATE Category SET categoryName = ? WHERE categoryId = ?;
+    UPDATE Categories SET categoryName = ? WHERE categoryId = ?;
   `;
   const updateCategoryValues = [categoryName, categoryId];
 
@@ -118,7 +118,7 @@ categoryRouter.delete("/:id", async (request, response) => {
 
   // Check if the category exists
   const checkCategoryQuery = /*sql*/ `
-    SELECT * FROM Category WHERE categoryId = ?;
+    SELECT * FROM Categories WHERE categoryId = ?;
   `;
   const [checkCategoryResults] = await dbConnection.execute(checkCategoryQuery, [categoryId]);
 
@@ -128,7 +128,7 @@ categoryRouter.delete("/:id", async (request, response) => {
 
   // Delete the category
   const deleteCategoryQuery = /*sql*/ `
-    DELETE FROM Category WHERE categoryId = ?;
+    DELETE FROM Categories WHERE categoryId = ?;
   `;
   const deleteCategoryValues = [categoryId];
 
