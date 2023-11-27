@@ -20,7 +20,7 @@ userRouter.get("/:id", async (request, response) => {
   const id = request.params.id;
   const query = /*sql*/ `
     SELECT * 
-    FROM user WHERE userId=?;`;
+    FROM users WHERE userId=?;`;
   const values = [id];
 
   try {
@@ -41,7 +41,7 @@ userRouter.post("/", async (request, response) => {
   const { email, password, newsletterSubscription } = request.body;
 
   const createUserQuery = /*sql*/ `
-    INSERT INTO user (email, password, newsletterSubscription)
+    INSERT INTO users (email, password, newsletterSubscription)
     VALUES (?, ?, ?);
   `;
   const createUserValues = [email, password, newsletterSubscription];
@@ -61,7 +61,7 @@ userRouter.put("/:id", async (request, response) => {
   const { email, password, newsletterSubscription } = request.body;
 
   const updateUserQuery = /*sql*/ `
-    UPDATE user
+    UPDATE users
     SET email = ?, password = ?, newsletterSubscription = ?
     WHERE userId = ?;
   `;
@@ -81,7 +81,7 @@ userRouter.delete("/:id", async (request, response) => {
   const userId = request.params.id;
 
   const deleteUserQuery = /*sql*/ `
-    DELETE FROM user
+    DELETE FROM users
     WHERE userId = ?;
   `;
   const deleteUserValues = [userId];
