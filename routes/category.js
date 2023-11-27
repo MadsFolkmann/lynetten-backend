@@ -63,6 +63,25 @@ categoryRouter.get("/:id", async (request, response) => {
   }
 });
 
+// Post (Create) a Category
+categoryRouter.post("/", async (request, response) => {
+  const { categoryName } = request.body;
+
+  const createCategoryQuery = /*sql*/ `
+    INSERT INTO Category (categoryName)
+    VALUES (?);
+  `;
+  const createCategoryValues = [categoryName];
+
+  try {
+    await dbConnection.execute(createCategoryQuery, createCategoryValues);
+    response.json({ message: "Category created successfully" });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ message: "Internal server error" });
+  }
+});
+
 // PUT (Update) a Category
 categoryRouter.put("/:id", async (request, response) => {
   const categoryId = request.params.id;
