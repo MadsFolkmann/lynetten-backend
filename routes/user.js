@@ -15,6 +15,7 @@ userRouter.get("/", async (request, response) => {
   }
 });
 
+
 // GET SPECIFIC USER
 userRouter.get("/:id", async (request, response) => {
   const id = request.params.id;
@@ -39,14 +40,14 @@ userRouter.get("/:id", async (request, response) => {
 // PUT (Update) User
 userRouter.put("/:id", async (request, response) => {
   const userId = request.params.id;
-  const { username, email, password, newsletterSubscription } = request.body;
+  const { email, password, newsletterSubscription } = request.body;
 
   const updateUserQuery = /*sql*/ `
     UPDATE user
-    SET username = ?, email = ?, password = ?, newsletterSubscription = ?
+    SET email = ?, password = ?, newsletterSubscription = ?
     WHERE userId = ?;
   `;
-  const updateUserValues = [username, email, password, newsletterSubscription, userId];
+  const updateUserValues = [email, password, newsletterSubscription, userId];
 
   try {
     await dbConnection.execute(updateUserQuery, updateUserValues);
