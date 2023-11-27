@@ -77,6 +77,67 @@ productRouter.get("/:id/category", async (request, response) => {
   }
 });
 
+productRouter.post("/", async (request, response) => {
+  try {
+    const { productNumber, productName, imageURLs, listPrice, offerPrice, stockQuantity, description, categories, colors } = request.body;
+
+    // Insert the product into the Product table
+    const insertProductQuery = /*sql*/ `
+      INSERT INTO Product (productNumber, productName, imageURLs, listPrice, offerPrice, stockQuantity, description)
+      VALUES (?, ?, ?, ?, ?, ?, ?);
+    `;
+    const insertProductValues = [productNumber, productName, imageURLs, listPrice, offerPrice, stockQuantity, description];
+
+    const [productResult] = await dbConnection.execute(insertProductQuery, insertProductValues);
+
+    // Insert categories for the product
+    const productId = productResult.insertId;
+
+  
+// Insert categories for the product
+    if (categories && categories.length > 0) {
+      for (const categoryName of categories) {
+        // Get the categoryId based on categoryName
+        const getCategoryQuery = /*sql*/ `
+      SELECT categoryId FROM Category WHERE categoryName = ?;
+    `;
+        const [categoryRows] = await dbConnection.execute(getCategoryQuery, [categoryName]);
+
+        if (categoryRows.length > 0) {
+          const categoryId = categoryRows[0].categoryId;
+
+          // Insert the productId and categoryId into ProductCategory table
+          const insertCategoryQuery = /*sql*/ `
+        INSERT INTO ProductCategory (productId, categoryId) VALUES (?, ?);
+      `;
+          await dbConnection.execute(insertCategoryQuery, [productId, categoryId]);
+        } else {
+          // Handle the case where the category doesn't exist
+          response.status(400).json({ message: `Category ${categoryName} does not exist` });
+          return;
+        }
+      }
+    }
+
+    // Insert colors for the product
+    if (colors && colors.length > 0) {
+      const insertColorsQuery = /*sql*/ `
+        INSERT INTO Color (productId, colorName) VALUES (?, ?);
+      `;
+      for (const color of colors) {
+        await dbConnection.execute(insertColorsQuery, [productId, color]);
+      }
+    }
+    
+    response.status(201).json({ message: "Product created successfully" });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
+
 // Put Products (Samt at kunne ændre på color og kategori)
 productRouter.put("/:id", async (request, response) => {
   try {
