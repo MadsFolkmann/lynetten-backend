@@ -83,16 +83,16 @@ productRouter.put("/:id", async (request, response) => {
     const productId = request.params.id;
 
     // Extract updated product information from the request body
-    const { productNumber, productName, imageURLs, listPrice, offerPrice, stockQuantity, categories, colors } = request.body;
+    const { productNumber, productName, imageURLs, listPrice, offerPrice, stockQuantity, description, categories, colors } = request.body;
 
     // Update the product in the Product table
     const updateProductQuery = /*sql*/ `
-      UPDATE Product
-      SET productNumber = ?, productName = ?, imageURLs = ?, listPrice = ?, offerPrice = ?, stockQuantity = ?
-      WHERE productId = ?;
-    `;
+  UPDATE Product
+  SET productNumber = ?, productName = ?, imageURLs = ?, listPrice = ?, offerPrice = ?, stockQuantity = ?, description = ?
+  WHERE productId = ?;
+`;
 
-    const updateProductValues = [productNumber, productName, imageURLs, listPrice, offerPrice, stockQuantity, productId];
+    const updateProductValues = [productNumber, productName, imageURLs, listPrice, offerPrice, stockQuantity, description, productId];
 
     await dbConnection.execute(updateProductQuery, updateProductValues);
 

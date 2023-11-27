@@ -25,6 +25,6 @@ app.listen(port, () => {
 });
 
 // Routers
-app.use("/product", productRouter);
-app.use("/category", categoryRouter);
-app.use("/user", userRouter);
+app.use("/products", productRouter);
+app.use("/categories", categoryRouter);
+app.use("/users", userRouter);
