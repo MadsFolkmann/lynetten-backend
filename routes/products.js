@@ -94,15 +94,15 @@ productRouter.post("/", async (request, response) => {
     const productId = productResult.insertId;
 
   
-// Insert categories for the product
+    // Insert categories for the product
     if (categories && categories.length > 0) {
       for (const categoryName of categories) {
+        console.log(categories);
         // Get the categoryId based on categoryName
         const getCategoryQuery = /*sql*/ `
       SELECT categoryId FROM Category WHERE categoryName = ?;
     `;
         const [categoryRows] = await dbConnection.execute(getCategoryQuery, [categoryName]);
-
         if (categoryRows.length > 0) {
           const categoryId = categoryRows[0].categoryId;
 
