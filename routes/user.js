@@ -6,7 +6,7 @@ const userRouter = Router();
 // Get Users
 userRouter.get("/", async (request, response) => {
   try {
-    const query = "SELECT * FROM user ORDER BY userId;";
+    const query = "SELECT * FROM users ORDER BY userId;";
     const [rows, fields] = await dbConnection.execute(query);
     response.json(rows);
   } catch (error) {

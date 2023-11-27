@@ -32,7 +32,7 @@ productRouter.get("/:id", async (request, response) => {
         P.*,
         GROUP_CONCAT(DISTINCT CAT.categoryName) as categories,
         GROUP_CONCAT(DISTINCT CO.colorName) as colors
-      FROM Product AS P
+      FROM Products AS P
       LEFT JOIN ProductCategory AS PC ON P.productId = PC.productId
       LEFT JOIN Categories AS CAT ON PC.categoryId = CAT.categoryId
       LEFT JOIN Colors AS CO ON P.productId = CO.productId
@@ -83,7 +83,7 @@ productRouter.post("/", async (request, response) => {
 
     // Insert the product into the Product table
     const insertProductQuery = /*sql*/ `
-      INSERT INTO Product (productNumber, productName, imageURLs, listPrice, offerPrice, stockQuantity, description)
+      INSERT INTO Products (productNumber, productName, imageURLs, listPrice, offerPrice, stockQuantity, description)
       VALUES (?, ?, ?, ?, ?, ?, ?);
     `;
     const insertProductValues = [productNumber, productName, imageURLs, listPrice, offerPrice, stockQuantity, description];
@@ -98,7 +98,7 @@ productRouter.post("/", async (request, response) => {
       for (const categoryName of categories) {
         // Get the categoryId based on categoryName
         const getCategoryQuery = /*sql*/ `
-      SELECT categoryId FROM Category WHERE categoryName = ?;
+      SELECT categoryId FROM Categories WHERE categoryName = ?;
     `;
         const [categoryRows] = await dbConnection.execute(getCategoryQuery, [categoryName]);
         if (categoryRows.length > 0) {
@@ -120,7 +120,7 @@ productRouter.post("/", async (request, response) => {
     // Insert colors for the product
     if (colors && colors.length > 0) {
       const insertColorsQuery = /*sql*/ `
-        INSERT INTO Color (productId, colorName) VALUES (?, ?);
+        INSERT INTO Colors (productId, colorName) VALUES (?, ?);
       `;
       for (const color of colors) {
         await dbConnection.execute(insertColorsQuery, [productId, color]);

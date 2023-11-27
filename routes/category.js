@@ -10,8 +10,8 @@ categoryRouter.get("/", async (request, response) => {
       SELECT C.*, GROUP_CONCAT(DISTINCT P.productName) AS products, GROUP_CONCAT(DISTINCT CO.colorName) AS colors
       FROM Categories AS C
       LEFT JOIN ProductCategory AS PC ON C.categoryId = PC.categoryId
-      LEFT JOIN Product AS P ON PC.productId = P.productId
-      LEFT JOIN Color AS CO ON P.productId = CO.productId
+      LEFT JOIN Products AS P ON PC.productId = P.productId
+      LEFT JOIN Colors AS CO ON P.productId = CO.productId
       GROUP BY C.categoryId
       ORDER BY C.categoryName;`;
 
@@ -42,7 +42,7 @@ categoryRouter.get("/:id", async (request, response) => {
         SELECT P.*, GROUP_CONCAT(DISTINCT CO.colorName) as colors
         FROM Products AS P
         LEFT JOIN ProductCategory AS PC ON P.productId = PC.productId
-        LEFT JOIN Color AS CO ON P.productId = CO.productId
+        LEFT JOIN Colors AS CO ON P.productId = CO.productId
         WHERE PC.categoryId = ?
         GROUP BY P.productId
         ORDER BY P.productName;`;
