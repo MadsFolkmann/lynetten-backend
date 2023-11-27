@@ -36,17 +36,36 @@ userRouter.get("/:id", async (request, response) => {
   }
 });
 
+// Post (Create) User
+userRouter.post("/", async (request, response) => {
+  const { email, password, newsletterSubscription } = request.body;
+
+  const createUserQuery = /*sql*/ `
+    INSERT INTO user (email, password, newsletterSubscription)
+    VALUES (?, ?, ?);
+  `;
+  const createUserValues = [email, password, newsletterSubscription];
+
+  try {
+    await dbConnection.execute(createUserQuery, createUserValues);
+    response.json({ message: "User created successfully" });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ message: "Internal server error" });
+  }
+});
+
 // PUT (Update) User
 userRouter.put("/:id", async (request, response) => {
   const userId = request.params.id;
-  const { username, email, password, newsletterSubscription } = request.body;
+  const { email, password, newsletterSubscription } = request.body;
 
   const updateUserQuery = /*sql*/ `
     UPDATE user
-    SET username = ?, email = ?, password = ?, newsletterSubscription = ?
+    SET email = ?, password = ?, newsletterSubscription = ?
     WHERE userId = ?;
   `;
-  const updateUserValues = [username, email, password, newsletterSubscription, userId];
+  const updateUserValues = [email, password, newsletterSubscription, userId];
 
   try {
     await dbConnection.execute(updateUserQuery, updateUserValues);
