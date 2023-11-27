@@ -15,7 +15,6 @@ userRouter.get("/", async (request, response) => {
   }
 });
 
-
 // GET SPECIFIC USER
 userRouter.get("/:id", async (request, response) => {
   const id = request.params.id;
@@ -34,6 +33,25 @@ userRouter.get("/:id", async (request, response) => {
   } catch (error) {
     console.log(error);
     response.json({ message: error.message });
+  }
+});
+
+// Post (Create) User
+userRouter.post("/", async (request, response) => {
+  const { email, password, newsletterSubscription } = request.body;
+
+  const createUserQuery = /*sql*/ `
+    INSERT INTO user (email, password, newsletterSubscription)
+    VALUES (?, ?, ?);
+  `;
+  const createUserValues = [email, password, newsletterSubscription];
+
+  try {
+    await dbConnection.execute(createUserQuery, createUserValues);
+    response.json({ message: "User created successfully" });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ message: "Internal server error" });
   }
 });
 
