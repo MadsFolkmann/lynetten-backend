@@ -8,10 +8,10 @@ productRouter.get("/", async (request, response) => {
   try {
     const query = /*sql*/ `
       SELECT P.*, GROUP_CONCAT(DISTINCT CAT.categoryName) as categories, GROUP_CONCAT(DISTINCT CO.colorName) as colors
-      FROM Product AS P
+      FROM Products AS P
       LEFT JOIN ProductCategory AS PC ON P.productId = PC.productId
-      LEFT JOIN Category AS CAT ON PC.categoryId = CAT.categoryId
-      LEFT JOIN Color AS CO ON P.productId = CO.productId
+      LEFT JOIN Categories AS CAT ON PC.categoryId = CAT.categoryId
+      LEFT JOIN Colors AS CO ON P.productId = CO.productId
       GROUP BY P.productId
       ORDER BY P.productName;`;
 
@@ -34,8 +34,8 @@ productRouter.get("/:id", async (request, response) => {
         GROUP_CONCAT(DISTINCT CO.colorName) as colors
       FROM Product AS P
       LEFT JOIN ProductCategory AS PC ON P.productId = PC.productId
-      LEFT JOIN Category AS CAT ON PC.categoryId = CAT.categoryId
-      LEFT JOIN Color AS CO ON P.productId = CO.productId
+      LEFT JOIN Categories AS CAT ON PC.categoryId = CAT.categoryId
+      LEFT JOIN Colors AS CO ON P.productId = CO.productId
       WHERE P.productId = ?
       GROUP BY P.productId;`;
 
@@ -58,9 +58,9 @@ productRouter.get("/:id/category", async (request, response) => {
     const productId = request.params.id;
     const query = /*sql*/ `
       SELECT GROUP_CONCAT(DISTINCT CAT.categoryName) as categories
-      FROM Product AS P
+      FROM Products AS P
       LEFT JOIN ProductCategory AS PC ON P.productId = PC.productId
-      LEFT JOIN Category AS CAT ON PC.categoryId = CAT.categoryId
+      LEFT JOIN Categories AS CAT ON PC.categoryId = CAT.categoryId
       WHERE P.productId = ?
       GROUP BY P.productId;`;
 
@@ -93,7 +93,6 @@ productRouter.post("/", async (request, response) => {
     // Insert categories for the product
     const productId = productResult.insertId;
 
-  
     // Insert categories for the product
     if (categories && categories.length > 0) {
       for (const categoryName of categories) {
@@ -127,15 +126,13 @@ productRouter.post("/", async (request, response) => {
         await dbConnection.execute(insertColorsQuery, [productId, color]);
       }
     }
-    
+
     response.status(201).json({ message: "Product created successfully" });
   } catch (error) {
     console.error(error);
     response.status(500).json({ message: "Internal server error" });
   }
 });
-
-
 
 // Put Products (Samt at kunne ændre på color og kategori)
 productRouter.put("/:id", async (request, response) => {
@@ -147,7 +144,7 @@ productRouter.put("/:id", async (request, response) => {
 
     // Update the product in the Product table
     const updateProductQuery = /*sql*/ `
-  UPDATE Product
+  UPDATE Products
   SET productNumber = ?, productName = ?, imageURLs = ?, listPrice = ?, offerPrice = ?, stockQuantity = ?, description = ?
   WHERE productId = ?;
 `;
@@ -177,13 +174,13 @@ productRouter.put("/:id", async (request, response) => {
     if (colors && colors.length > 0) {
       // Delete existing colors for the product
       const deleteColorsQuery = /*sql*/ `
-        DELETE FROM Color WHERE productId = ?;
+        DELETE FROM Colors WHERE productId = ?;
       `;
       await dbConnection.execute(deleteColorsQuery, [productId]);
 
       // Insert new colors for the product
       const insertColorsQuery = /*sql*/ `
-        INSERT INTO Color (productId, colorName) VALUES (?, ?);
+        INSERT INTO Colors (productId, colorName) VALUES (?, ?);
       `;
       for (const color of colors) {
         await dbConnection.execute(insertColorsQuery, [productId, color]);
@@ -199,36 +196,35 @@ productRouter.put("/:id", async (request, response) => {
 
 // Delete Products
 productRouter.delete("/:id", async (request, response) => {
-    try {
-        const productId = request.params.id;
+  try {
+    const productId = request.params.id;
 
-        // Delete specific product-category associations
-        const deleteCategoriesQuery = /*sql*/ `
+    // Delete specific product-category associations
+    const deleteCategoriesQuery = /*sql*/ `
       DELETE FROM ProductCategory
       WHERE productId = ?;
     `;
-        await dbConnection.execute(deleteCategoriesQuery, [productId]);
+    await dbConnection.execute(deleteCategoriesQuery, [productId]);
 
-        // Delete product colors
-        const deleteColorsQuery = /*sql*/ `
-      DELETE FROM Color
+    // Delete product colors
+    const deleteColorsQuery = /*sql*/ `
+      DELETE FROM Colors
       WHERE productId = ?;
     `;
-        await dbConnection.execute(deleteColorsQuery, [productId]);
+    await dbConnection.execute(deleteColorsQuery, [productId]);
 
-        // Delete the product
-        const deleteProductQuery = /*sql*/ `
-      DELETE FROM Product
+    // Delete the product
+    const deleteProductQuery = /*sql*/ `
+      DELETE FROM Products
       WHERE productId = ?;
     `;
-        await dbConnection.execute(deleteProductQuery, [productId]);
+    await dbConnection.execute(deleteProductQuery, [productId]);
 
-        response.json({ message: "Product deleted successfully" });
-    } catch (error) {
-        console.error(error);
-        response.status(500).json({ message: "Internal server error" });
-    }
+    response.json({ message: "Product deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ message: "Internal server error" });
+  }
 });
-
 
 export default productRouter;
