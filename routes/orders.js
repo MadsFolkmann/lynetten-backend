@@ -50,36 +50,33 @@ orderRouter.post("/", async (request, response) => {
   }
 });
 
-orderRouter.put("/:id", async (request, response) => {
-  const orderId = request.params.id;
-  const { userId, orderDate, totalAmount } = request.body; // Updated property name
-
-  const updateOrderQuery = /*sql*/ `
-                UPDATE orders
-                SET userId = ?, orderDate = ?
-                WHERE orderId = ?;
-            `;
-  const updateOrderValues = [userId, orderDate, orderId]; // Updated property name
-
-  try {
-    await dbConnection.execute(updateOrderQuery, updateOrderValues);
-    response.json({ message: "Order updated successfully" });
-  } catch (error) {
-    console.error(error);
-    response.status(500).json({ message: "Internal server error" });
-  }
-});
-
 orderRouter.delete("/:id", async (request, response) => {
   const orderId = request.params.id;
-  const deleteOrderQuery = /*sql*/ `
-                DELETE FROM orders WHERE orderId = ?;
-            `;
-  const deleteOrderValues = [orderId];
+
+  // Check if the order exists before attempting to delete
+  const checkOrderQuery = /*sql*/ `
+    SELECT * FROM orders WHERE orderId = ?;
+  `;
+  const [existingOrder] = await dbConnection.execute(checkOrderQuery, [orderId]);
+
+  if (!existingOrder || existingOrder.length === 0) {
+    return response.status(404).json({ message: "Order not found" });
+  }
 
   try {
-    await dbConnection.execute(deleteOrderQuery, deleteOrderValues);
-    response.json({ message: "Order deleted successfully" });
+    // Delete order items associated with the order
+    const deleteOrderItemsQuery = /*sql*/ `
+      DELETE FROM orderitems WHERE orderId = ?;
+    `;
+    await dbConnection.execute(deleteOrderItemsQuery, [orderId]);
+
+    // Delete the order itself
+    const deleteOrderQuery = /*sql*/ `
+      DELETE FROM orders WHERE orderId = ?;
+    `;
+    await dbConnection.execute(deleteOrderQuery, [orderId]);
+
+    response.json({ message: "Order and associated items deleted successfully" });
   } catch (error) {
     console.error(error);
     response.status(500).json({ message: "Internal server error" });
