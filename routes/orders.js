@@ -32,7 +32,6 @@ orderRouter.get("/:id", async (request, response) => {
   }
 });
 
-
 orderRouter.post("/", async (request, response) => {
   const { userId, orderDate, totalAmount } = request.body; // Updated property name
   console.log(userId, orderDate, totalAmount);
@@ -45,6 +44,42 @@ orderRouter.post("/", async (request, response) => {
   try {
     await dbConnection.execute(createOrderQuery, createOrderValues);
     response.json({ message: "Order created successfully" });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ message: "Internal server error" });
+  }
+});
+
+orderRouter.put("/:id", async (request, response) => {
+  const orderId = request.params.id;
+  const { userId, orderDate, totalAmount } = request.body; // Updated property name
+
+  const updateOrderQuery = /*sql*/ `
+                UPDATE orders
+                SET userId = ?, orderDate = ?
+                WHERE orderId = ?;
+            `;
+  const updateOrderValues = [userId, orderDate, orderId]; // Updated property name
+
+  try {
+    await dbConnection.execute(updateOrderQuery, updateOrderValues);
+    response.json({ message: "Order updated successfully" });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ message: "Internal server error" });
+  }
+});
+
+orderRouter.delete("/:id", async (request, response) => {
+  const orderId = request.params.id;
+  const deleteOrderQuery = /*sql*/ `
+                DELETE FROM orders WHERE orderId = ?;
+            `;
+  const deleteOrderValues = [orderId];
+
+  try {
+    await dbConnection.execute(deleteOrderQuery, deleteOrderValues);
+    response.json({ message: "Order deleted successfully" });
   } catch (error) {
     console.error(error);
     response.status(500).json({ message: "Internal server error" });
