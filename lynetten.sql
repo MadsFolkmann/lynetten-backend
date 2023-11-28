@@ -28,7 +28,6 @@ CREATE TABLE Category (
 
 CREATE TABLE User (
    userId INT AUTO_INCREMENT PRIMARY KEY,
-   username VARCHAR(100),
    email VARCHAR(100),
    password VARCHAR(255),
    newsletterSubscription BOOLEAN DEFAULT FALSE
@@ -573,3 +572,9 @@ VALUES
 (122, 'Sølv'),
 (123, 'Sort'),
 (123, 'Rød');
+
+RENAME TABLE Product TO Products;
+RENAME TABLE Category TO Categories;
+RENAME TABLE Color TO Colors;
+RENAME TABLE User TO Users;
+RENAME TABLE OrderItem TO OrderItems;
