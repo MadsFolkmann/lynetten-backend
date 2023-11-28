@@ -33,4 +33,158 @@ orderItemRouter.get("/:id", async (request, response) => {
   }
 });
 
+
+// GET order items for a specific order
+orderItemRouter.get("/:orderId/items", async (request, response) => {
+  try {
+    const orderId = request.params.orderId;
+
+    // Fetch order items for the specified orderId
+    const getOrderItemsQuery = /*sql*/ `
+      SELECT *
+      FROM OrderItems
+      WHERE orderId = ?;
+    `;
+    
+    const [orderItems] = await dbConnection.execute(getOrderItemsQuery, [orderId]);
+
+    response.status(200).json({ orderItems });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
+// Add items to an order
+orderItemRouter.post("/:orderId/items", async (request, response) => {
+  try {
+    const orderId = request.params.orderId;
+    const { orderItems } = request.body;
+
+    if (orderItems && orderItems.length > 0) {
+      const createOrderItemsQuery = /*sql*/ `
+        INSERT INTO orderItems (orderId, productId, quantity)
+        VALUES (?, ?, ?);
+      `;
+      for (const item of orderItems) {
+        await dbConnection.execute(createOrderItemsQuery, [orderId, item.productId, item.quantity]);
+      }
+
+      // Calculate total amount based on the prices of associated items
+      const calculateTotalAmountQuery = /*sql*/ `
+        SELECT SUM(
+          CASE
+            WHEN Products.offerPrice IS NOT NULL AND Products.offerPrice < Products.listPrice THEN quantity * Products.offerPrice
+            ELSE quantity * Products.listPrice
+          END
+        ) AS totalAmount
+        FROM OrderItems
+        JOIN Products ON OrderItems.productId = Products.productId
+        WHERE orderId = ?;
+      `;
+      const [totalAmountResult] = await dbConnection.execute(calculateTotalAmountQuery, [orderId]);
+
+      const totalAmount = totalAmountResult[0].totalAmount;
+
+      // Update total amount in Orders table
+      const updateTotalAmountQuery = /*sql*/ `
+        UPDATE Orders
+        SET totalAmount = ?
+        WHERE orderId = ?;
+      `;
+      await dbConnection.execute(updateTotalAmountQuery, [totalAmount, orderId]);
+    }
+
+    response.status(201).json({ message: "Order items added successfully", orderId });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ message: "Internal server error" });
+  }
+});
+
+//syntax to add items to an order {
+//   "orderItems": [
+//     { "productId": 1, "quantity": 2 },
+//     { "productId": 3, "quantity": 1 },
+//     { "productId": 5, "quantity": 3 }
+//   ]
+// }
+
+// Update an order item
+orderItemRouter.put("/:orderId/items/:orderItemId", async (request, response) => {
+  try {
+    const orderId = request.params.orderId;
+    const orderItemId = request.params.orderItemId;
+    const { productId, quantity } = request.body;
+    console.log(orderId, orderItemId, productId, quantity);
+    // Check if the order item exists
+    const checkOrderItemQuery = /*sql*/ `
+      SELECT *
+      FROM OrderItems
+      WHERE orderId = ? AND orderItemId = ?;
+    `;
+
+    const [existingOrderItem] = await dbConnection.execute(checkOrderItemQuery, [orderId, orderItemId]);
+
+    if (!existingOrderItem || !existingOrderItem.length) {
+      return response.status(404).json({ message: "Order item not found" });
+    }
+
+    // Update the order item
+    const updateOrderItemQuery = /*sql*/ `
+      UPDATE OrderItems
+      SET productId = ?, quantity = ?
+      WHERE orderId = ? AND orderItemId = ?;
+    `;
+    
+    await dbConnection.execute(updateOrderItemQuery, [productId, quantity, orderId, orderItemId]);
+
+    response.status(200).json({ message: `Order item with ID ${orderItemId} updated successfully` });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ message: "Internal server error" });
+  }
+});
+
+//---- Syntax to update an order item     { "productId": 31, "quantity": 1 }
+
+// DELETE an order item
+orderItemRouter.delete("/:orderId/items/:orderItemId", async (request, response) => {
+  try {
+    const orderId = request.params.orderId;
+    const orderItemId = request.params.orderItemId;
+
+    // Fetch the order item to include in the response message
+    const getOrderItemQuery = /*sql*/ `
+      SELECT *
+      FROM OrderItems
+      WHERE orderId = ? AND orderItemId = ?;
+    `;
+
+    const [orderItem] = await dbConnection.execute(getOrderItemQuery, [orderId, orderItemId]);
+
+    if (!orderItem || !orderItem.length) {
+      return response.status(404).json({ message: "Order item not found" });
+    }
+
+    // Delete the specified order item
+    const deleteOrderItemQuery = /*sql*/ `
+      DELETE FROM OrderItems
+      WHERE orderId = ? AND orderItemId = ?;
+    `;
+    
+    await dbConnection.execute(deleteOrderItemQuery, [orderId, orderItemId]);
+
+    response.status(200).json({ message: `Order item with ID ${orderItemId} deleted successfully` });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
+
+
+
 export default orderItemRouter;
