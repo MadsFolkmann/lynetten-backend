@@ -50,6 +50,37 @@ orderRouter.post("/", async (request, response) => {
   }
 });
 
+orderRouter.put("/:id", async (request, response) => {
+  const orderId = request.params.id;
+  const { userId, orderDate, totalAmount } = request.body; // Opdaterede ejendomsnavne
+
+  // Check if the order exists before attempting to update
+  const checkOrderQuery = /*sql*/ `
+    SELECT * FROM orders WHERE orderId = ?;
+  `;
+  const [existingOrder] = await dbConnection.execute(checkOrderQuery, [orderId]);
+
+  if (!existingOrder || existingOrder.length === 0) {
+    return response.status(404).json({ message: "Order not found" });
+  }
+
+  try {
+    // Opdater de relevante felter i ordren
+    const updateOrderQuery = /*sql*/ `
+      UPDATE orders
+      SET userId = ?, orderDate = ?, totalAmount = ?
+      WHERE orderId = ?;
+    `;
+    const updateOrderValues = [userId, orderDate, totalAmount, orderId];
+    await dbConnection.execute(updateOrderQuery, updateOrderValues);
+
+    response.json({ message: "Order updated successfully" });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ message: "Internal server error" });
+  }
+});
+
 orderRouter.delete("/:id", async (request, response) => {
   const orderId = request.params.id;
 

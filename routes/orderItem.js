@@ -33,7 +33,6 @@ orderItemRouter.get("/:id", async (request, response) => {
   }
 });
 
-
 // GET order items for a specific order
 orderItemRouter.get("/:orderId/items", async (request, response) => {
   try {
@@ -45,7 +44,7 @@ orderItemRouter.get("/:orderId/items", async (request, response) => {
       FROM OrderItems
       WHERE orderId = ?;
     `;
-    
+
     const [orderItems] = await dbConnection.execute(getOrderItemsQuery, [orderId]);
 
     response.status(200).json({ orderItems });
@@ -54,7 +53,6 @@ orderItemRouter.get("/:orderId/items", async (request, response) => {
     response.status(500).json({ message: "Internal server error" });
   }
 });
-
 
 // Add items to an order
 orderItemRouter.post("/:orderId/items", async (request, response) => {
@@ -137,7 +135,7 @@ orderItemRouter.put("/:orderId/items/:orderItemId", async (request, response) =>
       SET productId = ?, quantity = ?
       WHERE orderId = ? AND orderItemId = ?;
     `;
-    
+
     await dbConnection.execute(updateOrderItemQuery, [productId, quantity, orderId, orderItemId]);
 
     response.status(200).json({ message: `Order item with ID ${orderItemId} updated successfully` });
@@ -173,7 +171,7 @@ orderItemRouter.delete("/:orderId/items/:orderItemId", async (request, response)
       DELETE FROM OrderItems
       WHERE orderId = ? AND orderItemId = ?;
     `;
-    
+
     await dbConnection.execute(deleteOrderItemQuery, [orderId, orderItemId]);
 
     response.status(200).json({ message: `Order item with ID ${orderItemId} deleted successfully` });
@@ -182,9 +180,5 @@ orderItemRouter.delete("/:orderId/items/:orderItemId", async (request, response)
     response.status(500).json({ message: "Internal server error" });
   }
 });
-
-
-
-
 
 export default orderItemRouter;
