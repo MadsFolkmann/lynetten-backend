@@ -1,4 +1,3 @@
-import exp from "constants";
 import { Router } from "express";
 import dbConnection from "../database.js";
 
@@ -34,13 +33,13 @@ orderRouter.get("/:id", async (request, response) => {
 });
 
 orderRouter.post("/", async (request, response) => {
-  const { userId, orderDate, totalPrice } = request.body;
+  const { userId, orderDate, totalAmount } = request.body; // Updated property name
 
   const createOrderQuery = /*sql*/ `
-            INSERT INTO orders (userId, orderDate, totalPrice)
+            INSERT INTO orders (userId, orderDate, totalAmount) // Updated property name
             VALUES (?, ?, ?);
         `;
-  const createOrderValues = [userId, orderDate, totalPrice];
+  const createOrderValues = [userId, orderDate, totalAmount]; // Updated property name
 
   try {
     await dbConnection.execute(createOrderQuery, createOrderValues);
