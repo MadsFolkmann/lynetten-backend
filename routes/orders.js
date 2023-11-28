@@ -34,9 +34,9 @@ orderRouter.get("/:id", async (request, response) => {
 
 orderRouter.post("/", async (request, response) => {
   const { userId, orderDate, totalAmount } = request.body; // Updated property name
-
+  console.log(userId, orderDate, totalAmount);
   const createOrderQuery = /*sql*/ `
-            INSERT INTO orders (userId, orderDate, totalAmount) // Updated property name
+            INSERT INTO orders (userId, orderDate, totalAmount)
             VALUES (?, ?, ?);
         `;
   const createOrderValues = [userId, orderDate, totalAmount]; // Updated property name
