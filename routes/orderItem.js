@@ -175,15 +175,15 @@ orderItemRouter.delete("/:orderId/items/:orderItemId", async (request, response)
         const orderItemId = request.params.orderItemId;
         const { userId } = request.query;
 
-        // Logic to distinguish between regular orders and guest orders
-        const orderTable = userId ? "Orders" : "GuestOrders";
+        // Construct the field name based on the presence of userId
+        const orderIdField = userId ? "orderId" : "guestOrderId";
 
         // Fetch the order item to include in the response message
         const getOrderItemQuery = /*sql*/ `
-      SELECT *
-      FROM ${orderTable}
-      WHERE orderId = ? AND orderItemId = ?;
-    `;
+            SELECT *
+            FROM OrderItems
+            WHERE ${orderIdField} = ? AND orderItemId = ?;
+        `;
 
         const [orderItem] = await dbConnection.execute(getOrderItemQuery, [orderId, orderItemId]);
 
@@ -193,9 +193,9 @@ orderItemRouter.delete("/:orderId/items/:orderItemId", async (request, response)
 
         // Delete the specified order item
         const deleteOrderItemQuery = /*sql*/ `
-      DELETE FROM ${orderTable}
-      WHERE orderId = ? AND orderItemId = ?;
-    `;
+            DELETE FROM OrderItems
+            WHERE ${orderIdField} = ? AND orderItemId = ?;
+        `;
 
         await dbConnection.execute(deleteOrderItemQuery, [orderId, orderItemId]);
 
@@ -205,6 +205,7 @@ orderItemRouter.delete("/:orderId/items/:orderItemId", async (request, response)
         response.status(500).json({ message: "Internal server error" });
     }
 });
+
 // DELETE http://your-api-url/:orderId/items/:orderItemId?userId=<userId>
 
 
