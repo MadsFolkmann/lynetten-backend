@@ -57,6 +57,8 @@ orderItemRouter.get("/:orderId/items", async (request, response) => {
         response.status(500).json({ message: "Internal server error" });
     }
 });
+//how to get order items for a specific order
+//  "/orderItem/123/items?userId=456"
 
 // Add items to an order
 orderItemRouter.post("/:orderId/items", async (request, response) => {

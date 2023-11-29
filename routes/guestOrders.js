@@ -4,7 +4,7 @@ import dbConnection from "../database.js";
 const guestOrderRouter = Router();
 
 //get guest orders
-guestOrderRouter.get("/cart", async (request, response) => {
+guestOrderRouter.get("/", async (request, response) => {
     try {
         const query = "SELECT * FROM GuestOrders ORDER BY guestOrderId;";
         const [rows, fields] = await dbConnection.execute(query);
@@ -16,7 +16,7 @@ guestOrderRouter.get("/cart", async (request, response) => {
 });
 
 //get guest order by id
-guestOrderRouter.get("/cart/:id", async (request, response) => {
+guestOrderRouter.get("/:id", async (request, response) => {
     try {
         const guestOrderId = request.params.id;
         const query = /*sql*/ `
@@ -33,7 +33,7 @@ guestOrderRouter.get("/cart/:id", async (request, response) => {
     }
 });
 
-guestOrderRouter.post("/cart", async (request, response) => {
+guestOrderRouter.post("/", async (request, response) => {
 try {
     const { orderDate } = request.body;
     const temporaryUserId = generateTemporaryUserId();
@@ -88,7 +88,7 @@ guestOrderRouter.put("/:guestOrderId/claim", async (request, response) => {
 });
 
 //Update guest order
-guestOrderRouter.put("/cart/:id", async (request, response) => {
+guestOrderRouter.put("/:id", async (request, response) => {
     try {
         const guestOrderId = request.params.id;
         const { orderDate, totalAmount } = request.body;
@@ -109,7 +109,7 @@ guestOrderRouter.put("/cart/:id", async (request, response) => {
 });
 
 //Delete guest order
-guestOrderRouter.delete("/cart/:id", async (request, response) => {
+guestOrderRouter.delete("/:id", async (request, response) => {
     try {
         const guestOrderId = request.params.id;
 
