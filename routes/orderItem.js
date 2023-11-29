@@ -35,27 +35,27 @@ orderItemRouter.get("/:id", async (request, response) => {
 
 // GET order items for a specific order
 orderItemRouter.get("/:orderId/items", async (request, response) => {
-    try {
-        const orderId = request.params.orderId;
-        const { userId } = request.query;
+   try {
+       const orderId = request.params.orderId;
+       const { userId } = request.query;
 
-        // Logic to distinguish between regular orders and guest orders
-        const orderTable = userId ? "Orders" : "GuestOrders";
+       // Construct the field name based on the presence of userId
+       const orderIdField = userId ? "orderId" : "guestOrderId";
 
-        // Fetch order items for the specified orderId
-        const getOrderItemsQuery = /*sql*/ `
-      SELECT *
-      FROM ${orderTable}
-      WHERE orderId = ?;
-    `;
+       // Fetch order items for the specified orderId
+       const getOrderItemsQuery = /*sql*/ `
+            SELECT *
+            FROM OrderItems
+            WHERE ${orderIdField} = ?;
+        `;
 
-        const [orderItems] = await dbConnection.execute(getOrderItemsQuery, [orderId]);
+       const [orderItems] = await dbConnection.execute(getOrderItemsQuery, [orderId]);
 
-        response.status(200).json({ orderItems });
-    } catch (error) {
-        console.error(error);
-        response.status(500).json({ message: "Internal server error" });
-    }
+       response.status(200).json({ orderItems });
+   } catch (error) {
+       console.error(error);
+       response.status(500).json({ message: "Internal server error" });
+   }
 });
 //how to get order items for a specific order
 //  "/orderItem/123/items?userId=456"
