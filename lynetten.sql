@@ -40,6 +40,13 @@ CREATE TABLE Orders (
    FOREIGN KEY (userId) REFERENCES User(userId)
 );
 
+CREATE TABLE GuestOrders (
+   guestOrderId INT AUTO_INCREMENT PRIMARY KEY,
+   temporaryUserId VARCHAR(50),
+   orderDate DATE,
+   totalAmount DECIMAL(10, 2)
+);
+
 CREATE TABLE OrderItem (
    orderItemId INT AUTO_INCREMENT PRIMARY KEY,
    orderId INT,
@@ -56,6 +63,18 @@ CREATE TABLE ProductCategory (
    FOREIGN KEY (productId) REFERENCES Product(productId),
    FOREIGN KEY (categoryId) REFERENCES Category(categoryId)
 );
+
+RENAME TABLE Product TO Products;
+RENAME TABLE Category TO Categories;
+RENAME TABLE Color TO Colors;
+RENAME TABLE User TO Users;
+RENAME TABLE OrderItem TO OrderItems;
+
+ALTER TABLE OrderItems
+ADD COLUMN guestOrderId INT,
+ADD CONSTRAINT fk_guestOrderId
+    FOREIGN KEY (guestOrderId)
+    REFERENCES GuestOrders(guestOrderId);
 
 INSERT INTO Product (productNumber, productName, imageURLs, listPrice, offerPrice, stockQuantity, Description)
 VALUES
@@ -572,9 +591,3 @@ VALUES
 (122, 'Sølv'),
 (123, 'Sort'),
 (123, 'Rød');
-
-RENAME TABLE Product TO Products;
-RENAME TABLE Category TO Categories;
-RENAME TABLE Color TO Colors;
-RENAME TABLE User TO Users;
-RENAME TABLE OrderItem TO OrderItems;

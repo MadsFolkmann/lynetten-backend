@@ -65,42 +65,44 @@ orderItemRouter.post("/:orderId/items", async (request, response) => {
     try {
         const orderId = request.params.orderId;
         const { orderItems, userId } = request.body;
+        console.log(orderId, orderItems, userId);
 
         // Logic to distinguish between regular orders and guest orders
-        const orderTable = userId ? "Orders" : "GuestOrders";
+        const isGuestOrder = !userId; // No userId indicates a guest order
 
         if (orderItems && orderItems.length > 0) {
             const createOrderItemsQuery = /*sql*/ `
-        INSERT INTO ${orderTable} (orderId, productId, quantity)
-        VALUES (?, ?, ?);
-      `;
+                INSERT INTO OrderItems (${isGuestOrder ? 'guestOrderId' : 'orderId'}, productId, quantity)
+                VALUES (?, ?, ?);
+            `;
 
             for (const item of orderItems) {
-                await dbConnection.execute(createOrderItemsQuery, [orderId, item.productId, item.quantity]);
+                const insertId = orderId;
+                await dbConnection.execute(createOrderItemsQuery, [insertId, item.productId, item.quantity]);
             }
 
             // Calculate total amount based on the prices of associated items
             const calculateTotalAmountQuery = /*sql*/ `
-        SELECT SUM(
-          CASE
-            WHEN Products.offerPrice IS NOT NULL AND Products.offerPrice < Products.listPrice THEN quantity * Products.offerPrice
-            ELSE quantity * Products.listPrice
-          END
-        ) AS totalAmount
-        FROM ${orderTable}
-        JOIN Products ON ${orderTable}.productId = Products.productId
-        WHERE orderId = ?;
-      `;
+                SELECT SUM(
+                    CASE
+                        WHEN Products.offerPrice IS NOT NULL AND Products.offerPrice < Products.listPrice THEN quantity * Products.offerPrice
+                        ELSE quantity * Products.listPrice
+                    END
+                ) AS totalAmount
+                FROM OrderItems
+                JOIN Products ON OrderItems.productId = Products.productId
+                WHERE ${isGuestOrder ? 'guestOrderId' : 'orderId'} = ?;
+            `;
 
             const [totalAmountResult] = await dbConnection.execute(calculateTotalAmountQuery, [orderId]);
             const totalAmount = totalAmountResult[0].totalAmount;
 
             // Update total amount in respective orders table
             const updateTotalAmountQuery = /*sql*/ `
-        UPDATE ${orderTable}
-        SET totalAmount = ?
-        WHERE orderId = ?;
-      `;
+                UPDATE ${isGuestOrder ? 'GuestOrders' : 'Orders'}
+                SET totalAmount = ?
+                WHERE ${isGuestOrder ? 'guestOrderId' : 'orderId'} = ?;
+            `;
 
             await dbConnection.execute(updateTotalAmountQuery, [totalAmount, orderId]);
 
