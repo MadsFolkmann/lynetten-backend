@@ -65,17 +65,17 @@ orderItemRouter.post("/:orderId/items", async (request, response) => {
     try {
         const orderId = request.params.orderId;
         const { orderItems, userId } = request.body;
-
+      console.log(orderId, orderItems, userId);
         // Logic to distinguish between regular orders and guest orders
-        const orderTable = userId ? "Orders" : "GuestOrders";
-
+      const orderTable = userId ? "Orders" : "GuestOrders";
+      
         if (orderItems && orderItems.length > 0) {
             const createOrderItemsQuery = /*sql*/ `
         INSERT INTO ${orderTable} (orderId, productId, quantity)
         VALUES (?, ?, ?);
       `;
 
-            for (const item of orderItems) {
+          for (const item of orderItems) {
                 await dbConnection.execute(createOrderItemsQuery, [orderId, item.productId, item.quantity]);
             }
 
@@ -114,7 +114,7 @@ orderItemRouter.post("/:orderId/items", async (request, response) => {
     }
 });
 
-//syntax to add items to an order {
+// syntax to add items to an order {
 //   "userId": 1, (if guest order, leave out this property)
 //   "orderItems": [
 //     { "productId": 1, "quantity": 2 },
@@ -203,5 +203,7 @@ orderItemRouter.delete("/:orderId/items/:orderItemId", async (request, response)
         response.status(500).json({ message: "Internal server error" });
     }
 });
+// DELETE http://your-api-url/:orderId/items/:orderItemId?userId=<userId>
+
 
 export default orderItemRouter;
