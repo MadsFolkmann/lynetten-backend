@@ -116,7 +116,7 @@ orderItemRouter.post("/:orderId/items", async (request, response) => {
     }
 });
 
-//syntax to add items to an order {
+// syntax to add items to an order {
 //   "userId": 1, (if guest order, leave out this property)
 //   "orderItems": [
 //     { "productId": 1, "quantity": 2 },
@@ -205,5 +205,7 @@ orderItemRouter.delete("/:orderId/items/:orderItemId", async (request, response)
         response.status(500).json({ message: "Internal server error" });
     }
 });
+// DELETE http://your-api-url/:orderId/items/:orderItemId?userId=<userId>
+
 
 export default orderItemRouter;
