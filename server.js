@@ -9,7 +9,7 @@ import userRouter from "./routes/user.js";
 import orderItemRouter from "./routes/orderItem.js";
 import orderRouter from "./routes/orders.js";
 import guestOrderRouter from "./routes/guestOrders.js";
-
+import searchRouter from "./routes/search.js";
 const app = express();
 const port = process.env.PORT || 4444;
 const debug = Debug("app:startup");
@@ -34,3 +34,4 @@ app.use("/users", userRouter);
 app.use("/orderItems", orderItemRouter);
 app.use("/orders", orderRouter);
 app.use("/guestOrders", guestOrderRouter);
+app.use("/search", searchRouter);
