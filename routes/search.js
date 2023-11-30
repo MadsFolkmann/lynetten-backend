@@ -13,7 +13,7 @@ searchRouter.get("/:q", async (request, response) => {
       ORDER BY productName`;
 
   const categoryQuery = /*sql*/ `
-      SELECT * FROM Categories WHERE categoryId LIKE ? ORDER BY categoryName`;
+      SELECT * FROM Categories WHERE categoryName LIKE ? ORDER BY categoryName`;
 
   const values = [`%${searchString}%`];
 
