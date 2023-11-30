@@ -3,25 +3,46 @@ import dbConnection from "../database.js";
 
 const productRouter = Router();
 
-// GET PRODUCTS
+// GET PRODUCTS and Pagination
 productRouter.get("/", async (request, response) => {
-  try {
-    const query = /*sql*/ `
-      SELECT P.*, GROUP_CONCAT(DISTINCT CAT.categoryName) as categories, GROUP_CONCAT(DISTINCT CO.colorName) as colors
-      FROM Products AS P
-      LEFT JOIN ProductCategory AS PC ON P.productId = PC.productId
-      LEFT JOIN Categories AS CAT ON PC.categoryId = CAT.categoryId
-      LEFT JOIN Colors AS CO ON P.productId = CO.productId
-      GROUP BY P.productId
-      ORDER BY P.productName;`;
+    try {
+        const pageNum = Number(request.query.pageNum);
+        const pageSize = Number(request.query.pageSize);
+        const offset = (pageNum - 1) * pageSize;
 
-    const [rows, fields] = await dbConnection.execute(query);
-    response.json(rows);
-  } catch (error) {
-    console.log(error);
-    response.json({ message: error.message });
-  }
+      console.log(pageSize, offset);
+        if (isNaN(pageNum) || isNaN(pageSize)) {
+            const query = /*sql*/ `
+        SELECT P.*, GROUP_CONCAT(DISTINCT CAT.categoryName) as categories, GROUP_CONCAT(DISTINCT CO.colorName) as colors
+        FROM Products AS P
+        LEFT JOIN ProductCategory AS PC ON P.productId = PC.productId
+        LEFT JOIN Categories AS CAT ON PC.categoryId = CAT.categoryId
+        LEFT JOIN Colors AS CO ON P.productId = CO.productId
+        GROUP BY P.productId
+        ORDER BY P.productName;`;
+
+            const [rows, fields] = await dbConnection.query(query);
+            response.json(rows);
+        } else {
+            const query = /*sql*/ `
+        SELECT P.*, GROUP_CONCAT(DISTINCT CAT.categoryName) as categories, GROUP_CONCAT(DISTINCT CO.colorName) as colors
+        FROM Products AS P
+        LEFT JOIN ProductCategory AS PC ON P.productId = PC.productId
+        LEFT JOIN Categories AS CAT ON PC.categoryId = CAT.categoryId
+        LEFT JOIN Colors AS CO ON P.productId = CO.productId
+        GROUP BY P.productId
+        ORDER BY P.productName
+        LIMIT ? OFFSET ?;`;
+
+          const [rows, fields] = await dbConnection.query(query, [pageSize, offset]);
+            response.json(rows);
+        }
+    } catch (error) {
+        console.log(error);
+        response.json({ message: error.message });
+    }
 });
+
 
 // GET SPECIFIC PRODUCT BY ID
 productRouter.get("/:id", async (request, response) => {
