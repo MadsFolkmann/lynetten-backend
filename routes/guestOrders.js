@@ -44,9 +44,9 @@ try {
     `;
     const [orderResult] = await dbConnection.execute(createGuestOrderQuery, [temporaryUserId, orderDate]);
 
-    const orderId = orderResult.insertId;
+    const guestOrderId = orderResult.insertId;
 
-    response.status(201).json({ message: "Guest order created successfully", orderId });
+    response.status(201).json({ message: "Guest order created successfully", guestOrderId });
 } catch (error) {
     console.error(error);
     response.status(500).json({ message: "Internal server error" });
