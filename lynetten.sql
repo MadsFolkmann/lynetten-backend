@@ -3,7 +3,7 @@ CREATE DATABASE webshop_database
 
 USE webshop_database
 
-CREATE TABLE Product (
+CREATE TABLE Products (
    productId INT AUTO_INCREMENT PRIMARY KEY,
    productNumber VARCHAR(50),
    productName VARCHAR(255),
@@ -14,19 +14,19 @@ CREATE TABLE Product (
    description TEXT
 );
 
-CREATE TABLE Color (
+CREATE TABLE Colors (
    colorId INT AUTO_INCREMENT PRIMARY KEY,
    productId INT,
    colorName VARCHAR(50),
-   FOREIGN KEY (productId) REFERENCES Product(productId)
+   FOREIGN KEY (productId) REFERENCES Products(productId)
 );
 
-CREATE TABLE Category (
+CREATE TABLE Categories (
    categoryId INT AUTO_INCREMENT PRIMARY KEY,
    categoryName VARCHAR(100)
 );
 
-CREATE TABLE User (
+CREATE TABLE Users (
    userId INT AUTO_INCREMENT PRIMARY KEY,
    email VARCHAR(100),
    password VARCHAR(255),
@@ -37,7 +37,7 @@ CREATE TABLE Orders (
    userId INT,
    orderDate DATE,
    totalAmount DECIMAL(10, 2),
-   FOREIGN KEY (userId) REFERENCES User(userId)
+   FOREIGN KEY (userId) REFERENCES Users(userId)
 );
 
 CREATE TABLE GuestOrders (
@@ -47,28 +47,23 @@ CREATE TABLE GuestOrders (
    totalAmount DECIMAL(10, 2)
 );
 
-CREATE TABLE OrderItem (
+CREATE TABLE OrderItems (
    orderItemId INT AUTO_INCREMENT PRIMARY KEY,
    orderId INT,
    productId INT,
    quantity INT,
    FOREIGN KEY (orderId) REFERENCES Orders(orderId),
-   FOREIGN KEY (productId) REFERENCES Product(productId)
+   FOREIGN KEY (productId) REFERENCES Products(productId)
 );
 
 CREATE TABLE ProductCategory (
    productCategoryId INT AUTO_INCREMENT PRIMARY KEY,
    productId INT,
    categoryId INT,
-   FOREIGN KEY (productId) REFERENCES Product(productId),
-   FOREIGN KEY (categoryId) REFERENCES Category(categoryId)
+   FOREIGN KEY (productId) REFERENCES Products(productId),
+   FOREIGN KEY (categoryId) REFERENCES Categories(categoryId)
 );
 
-RENAME TABLE Product TO Products;
-RENAME TABLE Category TO Categories;
-RENAME TABLE Color TO Colors;
-RENAME TABLE User TO Users;
-RENAME TABLE OrderItem TO OrderItems;
 
 ALTER TABLE OrderItems
 ADD COLUMN guestOrderId INT,
@@ -76,7 +71,7 @@ ADD CONSTRAINT fk_guestOrderId
     FOREIGN KEY (guestOrderId)
     REFERENCES GuestOrders(guestOrderId);
 
-INSERT INTO Product (productNumber, productName, imageURLs, listPrice, offerPrice, stockQuantity, Description)
+INSERT INTO Products (productNumber, productName, imageURLs, listPrice, offerPrice, stockQuantity, Description)
 VALUES
   ( 'PA-1324280', 'Toggle 12x48mm', 'https://www.palby.dk/pictures/resize.php/668x668/1041870_XL.jpg', 112.00, null, 7, ' '),
   ( 'PA-1324480', 'Blue Wave Gevindterminal 6mm/wire 4mm', 'https://www.baadservice.dk/components/com_redshop/assets/images/product/thumb/4aa2e42c28a663b5285c3676b979035b_w250_h250.jpg', 77.00, null, 17, ' '),
@@ -84,7 +79,7 @@ VALUES
   ( 'PA-1326692', 'Blue Wave U-bøjle med låsemøtrik klasse', 'https://www.palby.dk/pictures/resize.php/668x668/1326692_XL.jpg', 824.00, null, 0, ' '),
   ( 'PA-1339550', 'Blue Wave Wirekit til søgelænder eller trappe Ø4/7mm 10m', 'https://www.baadservice.dk/components/com_redshop/assets/images/product/thumb/ffb89495c3048ad4723c8ed9e966fbcb_w250_h250.jpg', 595.00, null, 1, ' ')
 
-INSERT INTO Product (productNumber, productName, imageURLs, listPrice, offerPrice, stockQuantity, Description)
+INSERT INTO Products (productNumber, productName, imageURLs, listPrice, offerPrice, stockQuantity, Description)
 VALUES
   ('PA-1339552', 'Blue Wave vantskrue til søgelænderwire Ø4mm venstre gevind', 'https://www.palby.dk/pictures/resize.php/668x668/1339551_XL.jpg', 138.00, null, 0, ''),
   ('PA-15.0900', 'Plastimo Kapsejladsbøje 188 x 26 cm', 'https://www.baadservice.dk/components/com_redshop/assets/images/product/thumb/3a67533e6cb6672e592ce88dfc04f7e1_w250_h250.jpg', 2149.00, null, 1, ' '),
@@ -98,7 +93,7 @@ VALUES
   ('PA-1151785', 'Dock Edge brolys LED med solcelle, hvid', 'https://www.baadservice.dk/components/com_redshop/assets/images/product/thumb/1389346902_fotografenanderandpaaandvej_w250_h250.jpg', 389.00, null, 2, ' '),
   ('PA-1171100', 'Coast PX300 håndlygte 150L med UV lys IPX4 incl. 3xAA batter', 'https://www.baadservice.dk/components/com_redshop/assets/images/product/thumb/83cf8d87e0d5776b80bfb17c1d519ff1_w250_h250.jpg', 349.00, null, 3, ' ');
 
-INSERT INTO Product (productNumber, productName, imageURLs, listPrice, offerPrice, stockQuantity, Description)
+INSERT INTO Products (productNumber, productName, imageURLs, listPrice, offerPrice, stockQuantity, Description)
 VALUES
 ('PA-14.1452', 'Zink gori 3bls/prop 18"-20"ø23', 'https://www.baadservice.dk/components/com_redshop/assets/images/product/thumb/da92c0dd43c660f7ad733f629b6765a3_w250_h250.jpg', 359.00, null, 5, ' '),
 ('PA-14.1453', 'Gori Zink ring 3-bl. skrueaksel 15"-16.5"', 'https://www.baadservice.dk/components/com_redshop/assets/images/product/thumb/1389346902_fotografenanderandpaaandvej_w250_h250.jpg', 329.00, null, 6, ' '),
@@ -136,7 +131,7 @@ VALUES
 ('PA-1531258', 'Stazo nutlock motorlås over 40hk', 'https://www.baadservice.dk/components/com_redshop/assets/images/product/thumb/710c6f3e6adbac8db131ac968a363eef_w250_h250.jpg', 1329.00, null, 5, ' '),
 ('PA-1051711', 'Abus hængelås massiv messing vinyl besky', 'https://www.baadservice.dk/components/com_redshop/assets/images/product/thumb/40514861849fc68c1db039cf7d5a4e62_w250_h250.jpg', 112.00, null, 0, ' ');
 
-INSERT INTO Product (productNumber, productName, imageURLs, listPrice, offerPrice, stockQuantity, description)
+INSERT INTO Products (productNumber, productName, imageURLs, listPrice, offerPrice, stockQuantity, description)
 VALUES
     ('PA-05.0100', 'Koøje 153 mm chrom', 'https://www.baadservice.dk/components/com_redshop/assets/images/product/thumb/9d006f5d3b06ee880213f72b505abb7a_w250_h250.jpg', 869, NULL, 1, ' '),
     ('PA-04.1675', '1852 Mågeskræmmer - Uglen 40 cm.', 'https://www.baadservice.dk/components/com_redshop/assets/images/product/thumb/82dd6d6ef06af8b18575134494dc47d3_w250_h250.jpg', 199, NULL, 3, ' '),
@@ -184,7 +179,7 @@ VALUES
     ('PA-1044150', 'Kinetic Kyst/Å 18g 5stk Jebo Sild', 'https://cdn.watski.com/tr:h-500,dpr-1/img/original_jpg/cebfa640-5cc2-11ec-b4f2-9da76bce963c.jpg', 85, NULL, 3, ' '),
     ('PA-1044181', 'Kinetic Sabiki Plaice Leader/Spoon 40g R', 'https://nordjysk-marine.dk/cdn/shop/files/H1044181_XL.jpg?v=1700267309&width=600', 39, NULL, 10, ' ');
 
-INSERT INTO Product (productNumber, productName, imageURLs, listPrice, offerPrice, stockQuantity, description)
+INSERT INTO Products (productNumber, productName, imageURLs, listPrice, offerPrice, stockQuantity, description)
 VALUES
 ('PA-04.0581', 'Dækspåfyldning water 38mm m/udl sort pla', 'https://www.baadservice.dk/components/com_redshop/assets/images/product/thumb/0bd16a90d17a826fdac550f33ec51bc9_w250_h250.jpg', 249, NULL, 0, ' '),
 ('PA-04.0587', 'Dækspåfyldning water 38mm m/udl rustfri', 'https://www.baadservice.dk/components/com_redshop/assets/images/product/thumb/8e236a2a1928f937fa098a69104ec028_w250_h250.jpg', 529, NULL, 0, ''),
@@ -239,7 +234,7 @@ VALUES
 
 
 
-INSERT INTO Category (categoryName)
+INSERT INTO Categories (categoryName)
 VALUES
   ('Riggerarbejde'),
   ('Gummibåde og Vandsport'),
@@ -252,7 +247,7 @@ VALUES
   ('Sol og vindenergi'),
   ('Tyvesikring og lås');
 
-INSERT INTO Category (categoryName) VALUES
+INSERT INTO Categories (categoryName) VALUES
 ('Bådudrustning alment'),
 ('Rig & Mast'),
 ('Tovværk og fortøjning'),
@@ -263,7 +258,7 @@ INSERT INTO Category (categoryName) VALUES
 ('Pumper, filtrings & slanger'),
 ('Fiskeudstyr');
 
-INSERT INTO Category (categoryName) VALUES
+INSERT INTO Categories (categoryName) VALUES
   ('Udstyr på og omkring dækket'),
   ('Fortøjning og ankring'),
   ('Køl og madlavning'),
@@ -378,58 +373,58 @@ INSERT INTO ProductCategory (productId, categoryId) VALUES
 (96, 19);  -- PA-1044181 => Fiskeudstyr
 
 INSERT INTO ProductCategory (productId, categoryId) VALUES
-  (97, 1),   -- PA-04.0581 => Udstyr på og omkring dækket
-  (98, 1),   -- PA-04.0587 => Udstyr på og omkring dækket
-  (99, 1),   -- PA-04.1735 => Udstyr på og omkring dækket
-  (100, 1),  -- PA-04.1746 => Udstyr på og omkring dækket
-  (101, 1),  -- PA-04.1870-1 => Udstyr på og omkring dækket
-  (102, 2),  -- PA-1010221 => Fortøjning og ankring
-  (103, 2),  -- PA-1010705 => Fortøjning og ankring
-  (104, 2),  -- PA-1010953 => Fortøjning og ankring
-  (105, 2),  -- PA-1011130 => Fortøjning og ankring
-  (106, 2),  -- PA-1011120 => Fortøjning og ankring
-  (107, 3),  -- PA-1283254 => Køl og madlavning
-  (108, 3),  -- PA-1283258 => Køl og madlavning
-  (109, 3),  -- PA-1283262 => Køl og madlavning
-  (110, 3),  -- PA-1283259 => Køl og madlavning
-  (111, 4),  -- PA-1851771 => Komfort ombord
-  (112, 4),  -- PA-15.2450 => Komfort ombord
-  (113, 4),  -- PA-15.3622 => Komfort ombord
-  (114, 4),  -- PA-1610105 => Komfort ombord
-  (115, 4),  -- PA-1610895 => Komfort ombord
-  (116, 5),  -- PA-63.2211 => Maling og klargøring
-  (117, 5),  -- PA-64.82616 => Maling og klargøring
-  (118, 5),  -- PA-64.96516 => Maling og klargøring
-  (119, 5),  -- PA-67.0821 => Maling og klargøring
-  (120, 5),  -- PA-67.1051 => Maling og klargøring
-  (121, 6),  -- PA-35.39972 => Sejlertøj
-  (122, 6),  -- PA-35.4063 => Sejlertøj
-  (123, 6),  -- PA-35.4360-9 => Sejlertøj
-  (124, 6),  -- PA-35.4219 => Sejlertøj
-  (125, 6),  -- PA-35.4413 => Sejlertøj
-  (126, 7),  -- PA-16.0534 => Sikkerhedsudstyr
-  (127, 7),  -- PA-16.0721 => Sikkerhedsudstyr
-  (128, 7),  -- PA-1580690 => Sikkerhedsudstyr
-  (129, 7),  -- PA-1580691 => Sikkerhedsudstyr
-  (130, 7),  -- PA-16.1077 => Sikkerhedsudstyr
-  (131, 8),  -- PA-1270130 => Elforsyning
-  (132, 8),  -- PA-1270172 => Elforsyning
-  (133, 8),  -- PA-1270189 => Elforsyning
-  (134, 8),  -- PA-1270085 => Elforsyning
-  (135, 8),  -- PA-1270074 => Elforsyning
-  (136, 9),  -- PA-1270073 => Elektronik ombord
-  (137, 9),  -- PA-1270083 => Elektronik ombord
-  (138, 9),  -- PA-1270104 => Elektronik ombord
-  (139, 9),  -- PA-1119977 => Elektronik ombord
-  (140, 9),  -- PA-1119988 => Elektronik ombord
-  (141, 10), -- PA-1240106 => Gaveartikler og bøger
-  (142, 10), -- PA-1800350 => Gaveartikler og bøger
-  (143, 10), -- PA-1810430 => Gaveartikler og bøger
-  (144, 10), -- PA-1810790 => Gaveartikler og bøger
-  (145, 10); -- PA-1820090 => Gaveartikler og bøger
+  (97, 20),   -- PA-04.0581 => Udstyr på og omkring dækket
+  (98, 20),   -- PA-04.0587 => Udstyr på og omkring dækket
+  (99, 20),   -- PA-04.1735 => Udstyr på og omkring dækket
+  (100, 20),  -- PA-04.1746 => Udstyr på og omkring dækket
+  (101, 20),  -- PA-04.1870-1 => Udstyr på og omkring dækket
+  (102, 21),  -- PA-1010221 => Fortøjning og ankring
+  (103, 21),  -- PA-1010705 => Fortøjning og ankring
+  (104, 21),  -- PA-1010953 => Fortøjning og ankring
+  (105, 21),  -- PA-1011130 => Fortøjning og ankring
+  (106, 21),  -- PA-1011120 => Fortøjning og ankring
+  (107, 22),  -- PA-1283254 => Køl og madlavning
+  (108, 22),  -- PA-1283258 => Køl og madlavning
+  (109, 22),  -- PA-1283262 => Køl og madlavning
+  (110, 22),  -- PA-1283259 => Køl og madlavning
+  (111, 23),  -- PA-1851771 => Komfort ombord
+  (112, 23),  -- PA-15.2450 => Komfort ombord
+  (113, 23),  -- PA-15.3622 => Komfort ombord
+  (114, 23),  -- PA-1610105 => Komfort ombord
+  (115, 23),  -- PA-1610895 => Komfort ombord
+  (116, 24),  -- PA-63.2211 => Maling og klargøring
+  (117, 24),  -- PA-64.82616 => Maling og klargøring
+  (118, 24),  -- PA-64.96516 => Maling og klargøring
+  (119, 24),  -- PA-67.0821 => Maling og klargøring
+  (120, 24),  -- PA-67.1051 => Maling og klargøring
+  (121, 25),  -- PA-35.39972 => Sejlertøj
+  (122, 25),  -- PA-35.4063 => Sejlertøj
+  (123, 25),  -- PA-35.4360-9 => Sejlertøj
+  (124, 25),  -- PA-35.4219 => Sejlertøj
+  (125, 25),  -- PA-35.4413 => Sejlertøj
+  (126, 26),  -- PA-16.0534 => Sikkerhedsudstyr
+  (127, 26),  -- PA-16.0721 => Sikkerhedsudstyr
+  (128, 26),  -- PA-1580690 => Sikkerhedsudstyr
+  (129, 26),  -- PA-1580691 => Sikkerhedsudstyr
+  (130, 26),  -- PA-16.1077 => Sikkerhedsudstyr
+  (131, 27),  -- PA-1270130 => Elforsyning
+  (132, 27),  -- PA-1270172 => Elforsyning
+  (133, 27),  -- PA-1270189 => Elforsyning
+  (134, 27),  -- PA-1270085 => Elforsyning
+  (135, 27),  -- PA-1270074 => Elforsyning
+  (136, 28),  -- PA-1270073 => Elektronik ombord
+  (137, 28),  -- PA-1270083 => Elektronik ombord
+  (138, 28),  -- PA-1270104 => Elektronik ombord
+  (139, 28),  -- PA-1119977 => Elektronik ombord
+  (140, 28),  -- PA-1119988 => Elektronik ombord
+  (141, 29), -- PA-1240106 => Gaveartikler og bøger
+  (142, 29), -- PA-1800350 => Gaveartikler og bøger
+  (143, 29), -- PA-1810430 => Gaveartikler og bøger
+  (144, 29), -- PA-1810790 => Gaveartikler og bøger
+  (145, 29); -- PA-1820090 => Gaveartikler og bøger
 
 
-INSERT INTO Color (productId, colorName)
+INSERT INTO Colors (productId, colorName)
 VALUES
   (1, 'Grå'),
   (2, 'Grå'),
@@ -484,7 +479,7 @@ VALUES
   (50, 'Grå'),
   (51, 'Sort');
 
-INSERT INTO Color (productId, colorName)
+INSERT INTO Colors (productId, colorName)
 VALUES
   (52, 'Chrome'),
   (53, 'Brun'),
@@ -532,7 +527,7 @@ VALUES
   (95, 'Unknown Color'),
   (96, 'Blå');
 
-INSERT INTO Color (productId, colorName)
+INSERT INTO Colors (productId, colorName)
 VALUES
   (97, 'Sort'),
   (98, 'Sort'),
@@ -584,7 +579,7 @@ VALUES
   (144, 'Unknown Color'),
   (145, 'Unknown Color');
 
-INSERT INTO Color (productId, colorName)
+INSERT INTO Colors (productId, colorName)
 VALUES
 (98, 'Grå'),
 (105,'Grå'),
