@@ -248,4 +248,23 @@ productRouter.delete("/:id", async (request, response) => {
   }
 });
 
+
+// Admin Delete
+productRouter.delete("/:id", async (request, response) => {
+  try {
+    const productId = request.params.id;
+
+    // Add authentication check here if necessary
+
+    const deleteProductQuery = /*sql*/ `DELETE FROM Products WHERE productId = ?;`;
+    await dbConnection.execute(deleteProductQuery, [productId]);
+
+    response.json({ message: "Product deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
 export default productRouter;
