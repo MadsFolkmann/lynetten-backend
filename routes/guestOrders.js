@@ -91,15 +91,15 @@ guestOrderRouter.put("/:guestOrderId/claim", async (request, response) => {
 guestOrderRouter.put("/:id", async (request, response) => {
     try {
         const guestOrderId = request.params.id;
-        const { orderDate, totalAmount } = request.body;
+        const { fullName, email, address, phoneNumber, city, zipCode } = request.body;
 
         const updateGuestOrderQuery = /*sql*/ `
       UPDATE GuestOrders
-      SET orderDate = ?, totalAmount = ?
+      SET fullName = ?, email = ?, address = ?, phoneNumber = ?, city = ?, zipCode = ?
       WHERE guestOrderId = ?;
     `;
 
-        await dbConnection.execute(updateGuestOrderQuery, [orderDate, totalAmount, guestOrderId]);
+        await dbConnection.execute(updateGuestOrderQuery, [fullName, email, address, phoneNumber, city, zipCode, guestOrderId]);
 
         response.json({ message: "Guest order updated successfully" });
     } catch (error) {
