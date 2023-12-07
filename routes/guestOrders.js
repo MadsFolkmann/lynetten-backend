@@ -92,15 +92,15 @@ guestOrderRouter.put("/:id", async (request, response) => {
     try {
         const guestOrderId = request.params.id;
         // console.log(guestOrderId);
-        const { fullName, email, address, phoneNumber, city, country, zipCode } = request.body;
+        const { fullName, email, address, phoneNumber, city, country, zipCode, paid } = request.body;
         // console.log(guestOrderId, fullName, email, address, phoneNumber, city, zipCode);
         const updateGuestOrderQuery = /*sql*/ `
       UPDATE GuestOrders
-      SET fullName = ?, email = ?, address = ?, phoneNumber = ?, country = ?, city = ?, zipCode = ?
+      SET fullName = ?, email = ?, address = ?, phoneNumber = ?, country = ?, city = ?, zipCode = ?, paid = ?
       WHERE guestOrderId = ?;
     `;
 
-        await dbConnection.execute(updateGuestOrderQuery, [fullName, email, address, phoneNumber, country, city, zipCode, guestOrderId]);
+        await dbConnection.execute(updateGuestOrderQuery, [fullName, email, address, phoneNumber, country, city, zipCode, paid, guestOrderId]);
 
         response.json({ message: "Guest order updated successfully" });
     } catch (error) {
@@ -126,6 +126,22 @@ guestOrderRouter.delete("/:id", async (request, response) => {
         console.error(error);
         response.status(500).json({ message: "Internal server error" });
     }
+});
+
+// Backend route to delete all unpaid guest orders
+guestOrderRouter.delete("/unpaid", async (request, response) => {
+  try {
+    const deleteUnpaidOrdersQuery = /*sql*/ `
+      DELETE FROM GuestOrders
+      WHERE paid = false; // Assuming 'paid' is the boolean field that indicates whether the order is paid or not
+    `;
+    await dbConnection.execute(deleteUnpaidOrdersQuery);
+
+    response.json({ message: "Unpaid guest orders deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ message: "Internal server error" });
+  }
 });
 
 
