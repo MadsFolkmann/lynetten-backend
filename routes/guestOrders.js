@@ -133,7 +133,7 @@ guestOrderRouter.delete("/unpaid", async (request, response) => {
   try {
     const deleteUnpaidOrdersQuery = /*sql*/ `
       DELETE FROM GuestOrders
-      WHERE paid = false; // Assuming 'paid' is the boolean field that indicates whether the order is paid or not
+      WHERE paid = false; 
     `;
     await dbConnection.execute(deleteUnpaidOrdersQuery);
 

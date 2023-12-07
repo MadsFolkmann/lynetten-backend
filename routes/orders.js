@@ -52,7 +52,7 @@ orderRouter.post("/", async (request, response) => {
 
 orderRouter.put("/:id", async (request, response) => {
   const orderId = request.params.id;
-  const { userId, orderDate, totalAmount } = request.body; // Opdaterede ejendomsnavne
+  const { userId, address, phoneNumber, city, country, zipCode, paid } = request.body; // Opdaterede ejendomsnavne
 
   // Check if the order exists before attempting to update
   const checkOrderQuery = /*sql*/ `
@@ -68,10 +68,10 @@ orderRouter.put("/:id", async (request, response) => {
     // Opdater de relevante felter i ordren
     const updateOrderQuery = /*sql*/ `
       UPDATE orders
-      SET userId = ?, orderDate = ?, totalAmount = ?
+      SET userId = ?, address = ?, phoneNumber = ?, country = ?, city = ?, zipCode = ?, paid = ?
       WHERE orderId = ?;
     `;
-    const updateOrderValues = [userId, orderDate, totalAmount, orderId];
+    const updateOrderValues = [userId, address, phoneNumber, country, city, zipCode, paid, orderId];
     await dbConnection.execute(updateOrderQuery, updateOrderValues);
 
     response.json({ message: "Order updated successfully" });
