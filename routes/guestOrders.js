@@ -91,8 +91,9 @@ guestOrderRouter.put("/:guestOrderId/claim", async (request, response) => {
 guestOrderRouter.put("/:id", async (request, response) => {
     try {
         const guestOrderId = request.params.id;
+        // console.log(guestOrderId);
         const { fullName, email, address, phoneNumber, city, zipCode } = request.body;
-
+        // console.log(guestOrderId, fullName, email, address, phoneNumber, city, zipCode);
         const updateGuestOrderQuery = /*sql*/ `
       UPDATE GuestOrders
       SET fullName = ?, email = ?, address = ?, phoneNumber = ?, city = ?, zipCode = ?

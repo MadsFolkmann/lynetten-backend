@@ -10,7 +10,7 @@ productRouter.get("/", async (request, response) => {
         const pageSize = Number(request.query.pageSize);
         const offset = (pageNum - 1) * pageSize;
 
-      console.log(pageSize, offset);
+
         if (isNaN(pageNum) || isNaN(pageSize)) {
             const query = /*sql*/ `
         SELECT P.*, GROUP_CONCAT(DISTINCT CAT.categoryName) as categories, GROUP_CONCAT(DISTINCT CO.colorName) as colors
@@ -187,7 +187,6 @@ productRouter.put("/:id", async (request, response) => {
       `;
       for (const category of categories) {
         await dbConnection.execute(insertCategoriesQuery, [productId, category]);
-        console.log(category);
       }
     }
 

@@ -65,7 +65,7 @@ orderItemRouter.post("/:orderId/items", async (request, response) => {
     try {
         const orderId = request.params.orderId;
         const { orderItems, userId } = request.body;
-        console.log(orderId, orderItems, userId);
+
 
         // Logic to distinguish between regular orders and guest orders
         const isGuestOrder = !userId; // No userId indicates a guest order
