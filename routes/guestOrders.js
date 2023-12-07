@@ -92,15 +92,15 @@ guestOrderRouter.put("/:id", async (request, response) => {
     try {
         const guestOrderId = request.params.id;
         // console.log(guestOrderId);
-        const { fullName, email, address, phoneNumber, city, zipCode } = request.body;
+        const { fullName, email, address, phoneNumber, city, country, zipCode } = request.body;
         // console.log(guestOrderId, fullName, email, address, phoneNumber, city, zipCode);
         const updateGuestOrderQuery = /*sql*/ `
       UPDATE GuestOrders
-      SET fullName = ?, email = ?, address = ?, phoneNumber = ?, city = ?, zipCode = ?
+      SET fullName = ?, email = ?, address = ?, phoneNumber = ?, country = ?, city = ?, zipCode = ?
       WHERE guestOrderId = ?;
     `;
 
-        await dbConnection.execute(updateGuestOrderQuery, [fullName, email, address, phoneNumber, city, zipCode, guestOrderId]);
+        await dbConnection.execute(updateGuestOrderQuery, [fullName, email, address, phoneNumber, country, city, zipCode, guestOrderId]);
 
         response.json({ message: "Guest order updated successfully" });
     } catch (error) {
