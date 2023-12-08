@@ -2,7 +2,6 @@ import express from "express";
 import cors from "cors";
 import Debug from "debug";
 import dbConnection from "./database.js";
-import bcrypt from "bcrypt"; // Import bcrypt if you're using it for password hashing
 import productRouter from "./routes/products.js";
 import categoryRouter from "./routes/category.js";
 import userRouter from "./routes/user.js";
@@ -22,31 +21,7 @@ app.get("/", (req, res) => {
   res.send("VELKOMMEN TIL LYNETTENS BACKEND BY AEM🏅🏅🏅");
 });
 
-// Add the login route here
-app.post("/login", async (req, res) => {
-    const { username, password } = req.body;
 
-    try {
-        // Replace the following query with the actual query to your database
-        const query = "SELECT * FROM Users WHERE username = ?";
-        const [users] = await dbConnection.execute(query, [username]);
-
-        const user = users[0];
-        if (user && bcrypt.compareSync(password, user.password)) {
-            // Check if user is admin
-            if (user.isAdmin) {
-                res.json({ success: true, isAdmin: true });
-            } else {
-                res.json({ success: true, isAdmin: false });
-            }
-        } else {
-            res.status(401).json({ success: false, message: 'Invalid credentials' });
-        }
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-});
 
 // Use the existing routers
 app.use("/products", productRouter);
