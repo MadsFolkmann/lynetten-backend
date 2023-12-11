@@ -33,21 +33,29 @@ orderRouter.get("/:id", async (request, response) => {
 });
 
 orderRouter.post("/", async (request, response) => {
-  const { userId, orderDate, totalAmount } = request.body; // Updated property name
+    try {
+        const { userId, orderDate, totalAmount } = request.body; // Updated property name
 
-  const createOrderQuery = /*sql*/ `
+        const createOrderQuery = /*sql*/ `
             INSERT INTO orders (userId, orderDate )
             VALUES (?, ?);
         `;
-  const createOrderValues = [userId, orderDate]; // Updated property name
+        const createOrderValues = [userId, orderDate]; // Updated property name
+        
+        await dbConnection.execute(createOrderQuery, createOrderValues);
 
-  try {
-    await dbConnection.execute(createOrderQuery, createOrderValues);
-    response.json({ message: "Order created successfully" });
-  } catch (error) {
-    console.error(error);
-    response.status(500).json({ message: "Internal server error" });
-  }
+        // Retrieve the last inserted ID using the lastInsertId() method
+        const getLastInsertedIdQuery = "SELECT LAST_INSERT_ID() as orderId;";
+        const [rows] = await dbConnection.execute(getLastInsertedIdQuery);
+
+        const orderId = rows[0].orderId;
+
+        console.log("orderId", orderId);
+        response.json({ message: "Order created successfully", orderId });
+    } catch (error) {
+        console.error(error);
+        response.status(500).json({ message: "Internal server error" });
+    }
 });
 
 orderRouter.put("/:id", async (request, response) => {
