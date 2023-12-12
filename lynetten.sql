@@ -1,7 +1,9 @@
 CREATE DATABASE webshop_database
 
 
+
 USE webshop_database
+
 
 CREATE TABLE Products (
    productId INT AUTO_INCREMENT PRIMARY KEY,
@@ -37,6 +39,14 @@ CREATE TABLE Orders (
    userId INT,
    orderDate DATE,
    totalAmount DECIMAL(10, 2),
+    fullName VARCHAR(100),
+   email VARCHAR(100),
+    address VARCHAR(255),
+   phoneNumber VARCHAR(20),
+   country VARCHAR(50),
+   city VARCHAR(50),
+   zipCode VARCHAR(10),
+    paid BOOLEAN DEFAULT FALSE,
    FOREIGN KEY (userId) REFERENCES Users(userId)
 );
 
@@ -44,8 +54,17 @@ CREATE TABLE GuestOrders (
    guestOrderId INT AUTO_INCREMENT PRIMARY KEY,
    temporaryUserId VARCHAR(50),
    orderDate DATE,
-   totalAmount DECIMAL(10, 2)
+   totalAmount DECIMAL(10, 2),
+   fullName VARCHAR(100),
+   email VARCHAR(100),
+   address VARCHAR(255),
+   phoneNumber VARCHAR(20),
+    country VARCHAR(50),
+   city VARCHAR(50),
+   zipCode VARCHAR(10),
+   paid BOOLEAN DEFAULT FALSE
 );
+
 
 CREATE TABLE OrderItems (
    orderItemId INT AUTO_INCREMENT PRIMARY KEY,
