@@ -15,23 +15,6 @@ orderItemRouter.get("/", async (request, response) => {
   }
 });
 
-// Get ordrItem by ID
-orderItemRouter.get("/:id", async (request, response) => {
-  try {
-    const orderItemId = request.params.id;
-    const query = /*sql*/ `
-        SELECT * FROM orderItems WHERE orderItemId = ?;`;
-    const [rows, fields] = await dbConnection.execute(query, [orderItemId]);
-    if (rows.length === 0) {
-      response.status(404).json({ message: "OrderItem not found" });
-    } else {
-      response.json(rows[0]);
-    }
-  } catch (error) {
-    console.log(error);
-    response.json({ message: error.message });
-  }
-});
 
 // GET order items for a specific order
 orderItemRouter.get("/:orderId/items", async (request, response) => {

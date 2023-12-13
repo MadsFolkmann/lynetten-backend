@@ -59,34 +59,6 @@ function generateTemporaryUserId() {
  return temporaryUserId;
 }
 
-// Claim guest order with a user
-guestOrderRouter.put("/:guestOrderId/claim", async (request, response) => {
-    try {
-        const { guestOrderId } = request.params;
-        const { userId } = request.body; // Assuming userId is sent in the request body
-
-        const claimOrderQuery = /*sql*/ `
-      INSERT INTO Orders (userId, orderDate, totalAmount)
-      SELECT ?, orderDate, totalAmount
-      FROM GuestOrders
-      WHERE guestOrderId = ?;
-    `;
-
-        const deleteGuestOrderQuery = /*sql*/ `
-      DELETE FROM GuestOrders
-      WHERE guestOrderId = ?;
-    `;
-
-        await dbConnection.execute(claimOrderQuery, [userId, guestOrderId]);
-        await dbConnection.execute(deleteGuestOrderQuery, [guestOrderId]);
-
-        response.json({ message: `Guest order ${guestOrderId} claimed successfully` });
-    } catch (error) {
-        console.error(error);
-        response.status(500).json({ message: "Internal server error" });
-    }
-});
-
 //Update guest order
 guestOrderRouter.put("/:id", async (request, response) => {
     try {
