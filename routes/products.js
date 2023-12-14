@@ -116,26 +116,14 @@ productRouter.post("/", async (request, response) => {
 
     // Insert categories for the product
     if (categories && categories.length > 0) {
-      for (const categoryName of categories) {
-        // Get the categoryId based on categoryName
-        const getCategoryQuery = /*sql*/ `
-      SELECT categoryId FROM Categories WHERE categoryName = ?;
-    `;
-        const [categoryRows] = await dbConnection.execute(getCategoryQuery, [categoryName]);
-        if (categoryRows.length > 0) {
-          const categoryId = categoryRows[0].categoryId;
-
-          // Insert the productId and categoryId into ProductCategory table
-          const insertCategoryQuery = /*sql*/ `
-        INSERT INTO ProductCategory (productId, categoryId) VALUES (?, ?);
-      `;
-          await dbConnection.execute(insertCategoryQuery, [productId, categoryId]);
-        } else {
-          // Handle the case where the category doesn't exist
-          response.status(400).json({ message: `Category ${categoryName} does not exist` });
-          return;
+        const categoryIds = categories.split("|").map((category) => parseInt(category)); // Splists categories by pipe and maps them to integers
+        for (const categoryId of categoryIds) {
+            // Insert the productId and categoryId into ProductCategory table
+            const insertCategoryQuery = /*sql*/ `
+          INSERT INTO ProductCategory (productId, categoryId) VALUES (?, ?);
+        `;
+            await dbConnection.execute(insertCategoryQuery, [productId, categoryId]);
         }
-      }
     }
 
     // Insert colors for the product
@@ -181,14 +169,17 @@ productRouter.put("/:id", async (request, response) => {
         DELETE FROM ProductCategory WHERE productId = ?;
       `;
       await dbConnection.execute(deleteCategoriesQuery, [productId]);
-      // Insert new categories for the product
-      const insertCategoriesQuery = /*sql*/ `
-      INSERT INTO ProductCategory (productId, categoryId) VALUES (?, ?);
-      `;
-      for (const category of categories) {
-        await dbConnection.execute(insertCategoriesQuery, [productId, category]);
-      }
+
+        const categoryIds = categories.split("|").map((category) => parseInt(category)); // Splists categories by pipe and maps them to integers
+        for (const categoryId of categoryIds) {
+        // Insert the productId and categoryId into ProductCategory table
+        const insertCategoryQuery = /*sql*/ `
+          INSERT INTO ProductCategory (productId, categoryId) VALUES (?, ?);
+        `;
+          await dbConnection.execute(insertCategoryQuery, [productId, categoryId]);
+        }
     }
+
 
     // Update colors for the product
     if (colors && colors.length > 0) {
