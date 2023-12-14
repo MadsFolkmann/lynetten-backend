@@ -7,11 +7,10 @@ const categoryRouter = Router();
 categoryRouter.get("/", async (request, response) => {
   try {
     const categoryQuery = /*sql*/ `
-      SELECT C.*, GROUP_CONCAT(DISTINCT P.productName) AS products, GROUP_CONCAT(DISTINCT CO.colorName) AS colors
+      SELECT C.*, GROUP_CONCAT(DISTINCT P.productName) AS products, GROUP_CONCAT(DISTINCT P.productId) AS productIds
       FROM Categories AS C
       LEFT JOIN ProductCategory AS PC ON C.categoryId = PC.categoryId
       LEFT JOIN Products AS P ON PC.productId = P.productId
-      LEFT JOIN Colors AS CO ON P.productId = CO.productId
       GROUP BY C.categoryId
       ORDER BY C.categoryName;`;
 
