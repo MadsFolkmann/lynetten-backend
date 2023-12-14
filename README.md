@@ -4,15 +4,15 @@ Dette repository indeholder koden til Lynetten Backend, der er en server til en 
 
 # Links til Repositories:
 
-- [Backend Repository](https://github.com/Abdiox/music-database)
-- [Frontend Repository](https://github.com/emsc0001/music-database-frontend)
+- [Backend Repository](https://github.com/MadsFolkmann/lynetten-backend)
+- [Frontend Repository](https://github.com/emsc0001/lynetten-frontend)
 
 # Deployede Versioner
 
 Frontend er åben på GitHub Pages og kan tilgås her:
 
-[Live Webapplikation på Azure](https://music-database.azurewebsites.net/)
-[Live Webapplikation på Github Pages](https://emsc0001.github.io/music-database-frontend/)
+[Live Webapplikation på Azure](https://lynnetten-backend.azurewebsites.net/)
+[Live Webapplikation på Github Pages](https://emsc0001.github.io/lynetten-frontend/)
 
 # Installation
 
@@ -44,12 +44,12 @@ Det udløser så denne besked i terminalen hvor du kan tilgå linket til backend
 "Backend-serveren kører nu på http://localhost:4444."
 
 Brug
-Når både backend og frontend er startet, kan du åbne din webbrowser og besøge backend serveren på dette link: http://localhost:4444 og den deployede frontend page på github pages: https://emsc0001.github.io/music-database-frontend/
+Når både backend og frontend er startet, kan du åbne din webbrowser og besøge backend serveren på dette link: http://localhost:4444 og den deployede frontend page på github pages: https://emsc0001.github.io/lynetten-frontend/
 
 ## Deployede Versioner:
 
-[Live Webapplikation på Azure](https://music-database.azurewebsites.net/)
-[Live Webapplikation på Github Pages](https://emsc0001.github.io/music-database-frontend/)
+[Live Webapplikation på Azure](https://lynnetten-backend.azurewebsites.net/)
+[Live Webapplikation på Github Pages](https://emsc0001.github.io/lynetten-frontend/)
 
 Live Webapplikation:
 
