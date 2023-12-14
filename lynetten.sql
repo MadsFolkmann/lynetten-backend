@@ -245,7 +245,9 @@ VALUES
 ('PA-1820090', 'DHR Cabin lampe 8209 olie', 'https://www.palby.dk/pictures/resize.php/668x668/1820090_XL.jpg', 1839, NULL, 0, ' ');
 
 
-
+INSERT INTO Categories(categoryName)
+VALUES
+('Tilbud')
 
 INSERT INTO Categories (categoryName)
 VALUES

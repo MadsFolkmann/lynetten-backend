@@ -30,6 +30,7 @@ categoryRouter.get("/:id", async (request, response) => {
     SELECT * 
     FROM categories WHERE categoryId=?;`;
   const categoryValues = [categoryId];
+  console.log(categoryId);
 
   try {
     const [categoryResults] = await dbConnection.execute(categoryQuery, categoryValues);
@@ -38,9 +39,10 @@ categoryRouter.get("/:id", async (request, response) => {
       response.status(404).json({ message: "Category not found" });
     } else {
       const productQuery = /*sql*/ `
-      SELECT P.*
+      SELECT P.*, C.categoryName, C.categoryDescription
         FROM Products AS P
         LEFT JOIN ProductCategory AS PC ON P.productId = PC.productId
+        LEFT JOIN Categories AS C ON PC.categoryId = C.categoryId
         WHERE PC.categoryId = ?
         GROUP BY P.productId
         ORDER BY P.productName;`;
