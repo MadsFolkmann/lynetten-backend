@@ -39,10 +39,12 @@ categoryRouter.get("/:id", async (request, response) => {
       response.status(404).json({ message: "Category not found" });
     } else {
       const productQuery = /*sql*/ `
-        SELECT P.*, GROUP_CONCAT(DISTINCT CO.colorName) as colors
+      SELECT P.*, GROUP_CONCAT(DISTINCT CO.colorName) as colors, GROUP_CONCAT(DISTINCT C.categoryName) as categories
         FROM Products AS P
         LEFT JOIN ProductCategory AS PC ON P.productId = PC.productId
         LEFT JOIN Colors AS CO ON P.productId = CO.productId
+        LEFT JOIN Categories AS C ON PC.categoryId = C.categoryId
+
         WHERE PC.categoryId = ?
         GROUP BY P.productId
         ORDER BY P.productName;`;
