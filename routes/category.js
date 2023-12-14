@@ -25,40 +25,45 @@ categoryRouter.get("/", async (request, response) => {
 
 // GET SPECIFIC CATEGORY
 categoryRouter.get("/:id", async (request, response) => {
-  const categoryId = request.params.id;
-  const categoryQuery = /*sql*/ `
-    SELECT * 
-    FROM categories WHERE categoryId=?;`;
-  const categoryValues = [categoryId];
-  console.log(categoryId);
+    const categoryId = request.params.id;
+    const categoryQuery = /*sql*/ `
+        SELECT * 
+        FROM categories 
+        WHERE categoryId=?;
+    `;
+    const categoryValues = [categoryId];
 
-  try {
-    const [categoryResults] = await dbConnection.execute(categoryQuery, categoryValues);
+    try {
+        const [categoryResults] = await dbConnection.execute(categoryQuery, categoryValues);
 
-    if (categoryResults.length === 0) {
-      response.status(404).json({ message: "Category not found" });
-    } else {
-      const productQuery = /*sql*/ `
-      SELECT P.*, C.categoryName, C.categoryDescription
-        FROM Products AS P
-        LEFT JOIN ProductCategory AS PC ON P.productId = PC.productId
-        LEFT JOIN Categories AS C ON PC.categoryId = C.categoryId
-        WHERE PC.categoryId = ?
-        GROUP BY P.productId
-        ORDER BY P.productName;`;
+        if (categoryResults.length === 0) {
+            response.status(404).json({ message: "Category not found" });
+        } else {
+            const productQuery = /*sql*/ `
+                SELECT P.*, GROUP_CONCAT(DISTINCT C.categoryName) as categories
+                FROM Products AS P
+                LEFT JOIN ProductCategory AS PC ON P.productId = PC.productId
+                LEFT JOIN Categories AS C ON PC.categoryId = C.categoryId
+                WHERE PC.categoryId = ?
+                GROUP BY P.productId
+                ORDER BY P.productName;
+            `;
 
-      const [productResults] = await dbConnection.execute(productQuery, [categoryId]);
+            const [productResults] = await dbConnection.execute(productQuery, [categoryId]);
 
-      response.json({
-        category: categoryResults[0],
-        products: productResults,
-      });
+            response.json({
+                category: {
+                    ...categoryResults[0],
+                },
+                products: productResults,
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        response.json({ message: error.message });
     }
-  } catch (error) {
-    console.log(error);
-    response.json({ message: error.message });
-  }
 });
+
 
 // Post (Create) a Category
 categoryRouter.post("/", async (request, response) => {
