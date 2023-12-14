@@ -7,7 +7,7 @@ const categoryRouter = Router();
 categoryRouter.get("/", async (request, response) => {
   try {
     const categoryQuery = /*sql*/ `
-      SELECT C.*, GROUP_CONCAT(DISTINCT P.productName) AS products, GROUP_CONCAT(DISTINCT P.productId) AS productIds
+      SELECT C.*, GROUP_CONCAT(DISTINCT P.productName) AS products
       FROM Categories AS C
       LEFT JOIN ProductCategory AS PC ON C.categoryId = PC.categoryId
       LEFT JOIN Products AS P ON PC.productId = P.productId
@@ -38,12 +38,9 @@ categoryRouter.get("/:id", async (request, response) => {
       response.status(404).json({ message: "Category not found" });
     } else {
       const productQuery = /*sql*/ `
-      SELECT P.*, GROUP_CONCAT(DISTINCT CO.colorName) as colors, GROUP_CONCAT(DISTINCT C.categoryName) as categories
+      SELECT P.*
         FROM Products AS P
         LEFT JOIN ProductCategory AS PC ON P.productId = PC.productId
-        LEFT JOIN Colors AS CO ON P.productId = CO.productId
-        LEFT JOIN Categories AS C ON PC.categoryId = C.categoryId
-
         WHERE PC.categoryId = ?
         GROUP BY P.productId
         ORDER BY P.productName;`;
@@ -51,10 +48,7 @@ categoryRouter.get("/:id", async (request, response) => {
       const [productResults] = await dbConnection.execute(productQuery, [categoryId]);
 
       response.json({
-        category: {
-          ...categoryResults[0],
-          colors: productResults[0]?.colors, // Adding colors to the category result
-        },
+        category: categoryResults[0],
         products: productResults,
       });
     }
